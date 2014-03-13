@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.gallery.model.DataFileEntity" table="DATAFILE"
+	lazy="true">
+		<id name="id">
+			<column name="DATAFILE_ID" />
+			<generator class="native" />
+		</id>
+		<property name="createDate" column="DATAFILE_CREATEDATE" not-null="true" />
+		<property name="modifyTime" column="DATAFILE_MODIFYTIME" not-null="true" />
+		<property name="name" column="DATAFILE_NAME" length="128" type="string"
+			not-null="true" />
+		<property name="status" column="DATAFILE_STATUS" length="128"
+			not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.gallery.common.Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property name="key" column="DATAFILE_KEY" length="128" type="string"
+			not-null="true" />
+		<property name="fileType" column="DATAFILE_FILETYPE" length="128"
+			type="string" not-null="true" />
+		<property name="md5Code" column="DATAFILE_MD5CODE" length="128" type="string" />
+		<property name="size" column="SIZE" type="long" />
+	</class>
+</hibernate-mapping>

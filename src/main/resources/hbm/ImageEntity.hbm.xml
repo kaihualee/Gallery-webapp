@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="org.gallery.model.ImageEntity" table="IMAGE" lazy="true">
+		<id name="id">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		<property name="createDate" column="CREATEDATE" not-null="true" />
+		<property name="modifyTime" column="MODIFYTIME" not-null="true" />
+		<property name="name" column="NAME" length="128" type="string"
+			not-null="true" />
+		<property name="status" column="STATUS" length="128"
+			not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.gallery.common.Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property name="globala" column="GLOBAL_A" type="float"
+			not-null="true" />
+		<property name="globalw" column="GLOBAL_W" type="float"
+			not-null="true" />
+		<property name="globalh" column="GLOBAL_H" type="float"
+			not-null="true" />
+		<property name="global_awh" column="GLOBAL_AWH" type="float"
+			not-null="true" />
+		<property name="weights" column="WEIGHTS" type="java.sql.Blob"
+			not-null="true" />
+		<property name="heats" column="HEATS" type="java.sql.Blob"
+			not-null="true" />
+		<property name="activities" column="ACTIVITIES" type="java.sql.Blob"
+			not-null="true" />
+		<property name="info" column="INFO" length="512" type="string"
+			not-null="false" />
+	</class>
+</hibernate-mapping>
