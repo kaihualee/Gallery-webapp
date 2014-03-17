@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.ImageDao;
+import org.gallery.web.utils.EmotionParser;
 import org.gallery.web.vo.ImageVO;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
@@ -112,7 +113,8 @@ public class ImageController {
                     + thumbnailFilename);
                 ImageIO.write(thumbnail, "png", thumbnailFile);
 
-                ImageEntity entity = new ImageEntity();
+                ImageEntity entity = EmotionParser.parse(ImageIO.read(newFile));
+                //ImageEntity entity = new ImageEntity();
                 entity.setName(mpf.getOriginalFilename());
                 // entity.setThumbnailFilename(thumbnailFilename);
                 entity.setNewFilename(newFilename);
