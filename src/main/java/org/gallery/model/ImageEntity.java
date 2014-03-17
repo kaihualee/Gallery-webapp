@@ -33,12 +33,58 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
 
     private float globalh;
 
-    /**
-     * the info of image
-     */
-    private String info;
-
     private float global_awh;
+
+    private String newFilename;
+
+    private String contentType;
+
+    private Long size;
+
+    /**
+     * @return the newFilename
+     */
+    public String getNewFilename() {
+        return newFilename;
+    }
+
+    /**
+     * @param newFilename
+     *            the newFilename to set
+     */
+    public void setNewFilename(String newFilename) {
+        this.newFilename = newFilename;
+    }
+
+    /**
+     * @return the contentType
+     */
+    public String getContentType() {
+        return contentType;
+    }
+
+    /**
+     * @param contentType
+     *            the contentType to set
+     */
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    /**
+     * @return the size
+     */
+    public Long getSize() {
+        return size;
+    }
+
+    /**
+     * @param size
+     *            the size to set
+     */
+    public void setSize(Long size) {
+        this.size = size;
+    }
 
     /**
      * @return the global_awh
@@ -53,21 +99,6 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
      */
     public void setGlobal_awh(float global_awh) {
         this.global_awh = global_awh;
-    }
-
-    /**
-     * @return the info
-     */
-    public String getInfo() {
-        return info;
-    }
-
-    /**
-     * @param info
-     *            the info to set
-     */
-    public void setInfo(String info) {
-        this.info = info;
     }
 
     /**
@@ -160,4 +191,10 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
         this.globalh = globalh;
     }
 
+    @Override
+    public String toString() {
+        return "Image{" + "id=" + ", name=" + name + ", newFilename="
+            + newFilename + ", contentType=" + contentType + ", size=" + size
+            + '}';
+    }
 }

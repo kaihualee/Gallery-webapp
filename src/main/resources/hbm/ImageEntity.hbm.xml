@@ -22,20 +22,23 @@
 			</type>
 		</property>
 		<property name="globala" column="GLOBAL_A" type="float"
-			not-null="true" />
-		<property name="globalw" column="GLOBAL_W" type="float"
-			not-null="true" />
-		<property name="globalh" column="GLOBAL_H" type="float"
-			not-null="true" />
-		<property name="global_awh" column="GLOBAL_AWH" type="float"
-			not-null="true" />
-		<property name="weights" column="WEIGHTS" type="java.sql.Blob"
-			not-null="true" />
-		<property name="heats" column="HEATS" type="java.sql.Blob"
-			not-null="true" />
-		<property name="activities" column="ACTIVITIES" type="java.sql.Blob"
-			not-null="true" />
-		<property name="info" column="INFO" length="512" type="string"
 			not-null="false" />
+		<property name="globalw" column="GLOBAL_W" type="float"
+			not-null="false" />
+		<property name="globalh" column="GLOBAL_H" type="float"
+			not-null="false" />
+		<property name="global_awh" column="GLOBAL_AWH" type="float"
+			not-null="false" />
+		<property name="weights" column="WEIGHTS" type="java.sql.Blob"
+			not-null="false" />
+		<property name="heats" column="HEATS" type="java.sql.Blob"
+			not-null="false" />
+		<property name="activities" column="ACTIVITIES" type="java.sql.Blob"
+			not-null="false" />
+		<property name="newFilename" column="NEWFILENAME" length="512"
+			type="string" />
+		<property name="contentType" column="CONTENT_TYPE" length="64"
+			type="string" />
+		<property name="size" column="SIZE" type="long" />
 	</class>
 </hibernate-mapping>

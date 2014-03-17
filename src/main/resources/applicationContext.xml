@@ -16,7 +16,7 @@
           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
           http://www.springframework.org/schema/tx 
           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
-	default-autowire="byName" default-lazy-init="true">
+	default-autowire="byName" default-lazy-init="false">
 	<context:component-scan base-package="org.gallery" />
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
@@ -66,10 +66,6 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<!-- 支持 @AspectJ 标记 -->
-	<!-- 默认使用java proxy代理 -->
-	<aop:aspectj-autoproxy />
-
 	<!-- 支持 @Transactional 标记 -->
 	<tx:annotation-driven />
 
@@ -80,10 +76,9 @@
 	<!-- 以AspectJ方式 定义 AOP -->
 	<aop:config>
 		<aop:advisor
-			pointcut="execution(public * org.ColorImage.persist.common.*.*(..)) || execution(public * org.ColorImage.persist.impl.*.*(..)) || execution(public * org.ColorImage.service.impl.*.*(..))"
+			pointcut="execution(public * org.gallery.persist.common.*.*(..)) || execution(public * org.gallery.persist.impl.*.*(..)) || execution(public * org.gallery.service.impl.*.*(..))"
 			advice-ref="txAdvice" />
 	</aop:config>
-	<tx:annotation-driven />
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="save*" propagation="REQUIRED" read-only="false" />
