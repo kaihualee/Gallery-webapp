@@ -18,6 +18,8 @@ public class ImageVO {
     private String thumbnailUrl;
 
     private String deleteUrl;
+    
+    private String emotionUrl;
 
     private String deleteType;
 
@@ -32,6 +34,20 @@ public class ImageVO {
     public ImageVO(ImageEntity entity) {
         this.size = entity.getSize();
         this.name = entity.getName();
+    }
+
+    /**
+     * @return the emotionUrl
+     */
+    public String getEmotionUrl() {
+        return emotionUrl;
+    }
+
+    /**
+     * @param emotionUrl the emotionUrl to set
+     */
+    public void setEmotionUrl(String emotionUrl) {
+        this.emotionUrl = emotionUrl;
     }
 
     /**

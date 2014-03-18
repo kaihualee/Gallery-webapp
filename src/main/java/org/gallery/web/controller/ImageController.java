@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,6 +25,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.ImageDao;
 import org.gallery.web.utils.EmotionParser;
@@ -57,6 +60,8 @@ public class ImageController {
     private String fileUploadDirectory;
 
     final String thumbnail_suffix = "-thumbnail.png";
+
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping
     public String index() {
@@ -126,6 +131,7 @@ public class ImageController {
                 imageVO.setUrl("/action/picture/" + entity.getId());
                 imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
                 imageVO.setDeleteUrl("/action/delete/" + entity.getId());
+                imageVO.setEmotionUrl("/action/emotion/" + entity.getId());
                 imageVO.setDeleteType("DELETE");
 
                 list.add(imageVO);
@@ -193,6 +199,33 @@ public class ImageController {
         Map<String, Object> success = new HashMap<>();
         success.put("success", true);
         results.add(success);
+        return results;
+    }
+
+    @RequestMapping(value = "/emotion/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    Map emotion(@PathVariable Long id) {
+        ImageEntity entity = imageDao.get(id);
+
+        Map<String, Object> results = new HashMap<>();
+        float[] heats = null;
+        float[] activities = null;
+        float[] weights = null;
+        try {
+            heats = mapper.readValue(entity.getHeats().getBinaryStream(),
+                float[].class);
+            activities = mapper.readValue(entity.getActivities()
+                .getBinaryStream(), float[].class);
+            weights = mapper.readValue(entity.getWeights().getBinaryStream(),
+                float[].class);
+        } catch (IOException | SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        results.put("activities", activities);
+        results.put("weights", weights);
+        results.put("heats", heats);
+        log.debug(Arrays.toString(activities));
         return results;
     }
 }
