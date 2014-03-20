@@ -1,9 +1,0 @@
-2014-03-17 15:07:27.009:INFO:oejs.Server:jetty-8.1.14.v20131031
-2014-03-17 15:07:27.979:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.
-2014-03-17 15:07:31.139:INFO:/:No Spring WebApplicationInitializer types detected on classpath
-2014-03-17 15:07:31.573:INFO:/:Set web app root system property: 'webapp.root' = [C:\Documents and Settings\Dahaka\workspace\Gallery-webapp\src\main\webapp]
-2014-03-17 15:07:31.643:INFO:/:Initializing log4j from [classpath:log4j.properties]
-2014-03-17 15:07:31.648:INFO:/:Initializing Spring root WebApplicationContext
-2014-03-17 15:07:34.745:INFO:/:Initializing Spring FrameworkServlet 'Spring MVC'
-2014-03-17 15:07:35.470:WARN:oejsh.RequestLogHandler:!RequestLog
-2014-03-17 15:07:35.497:INFO:oejs.AbstractConnector:Started SelectChannelConnector@0.0.0.0:8080
