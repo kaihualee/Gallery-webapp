@@ -55,7 +55,7 @@
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
 						<li>
-							<a href="color.html">Account</a>
+							<a href="#">Account</a>
 						</li>
 						<li>
 							<a href="#">Settings</a>
@@ -76,10 +76,10 @@
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
 						<li class="active">
-							<a href="#">Overview</a>
+							<a href="#">Analysis</a>
 						</li>
 						<li>
-							<a href="#">Reports</a>
+							<a href="match.html">Matching</a>
 						</li>
 					</ul>
 				</div>
@@ -87,7 +87,7 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<h1 class="page-header">Dashboard</h1>
 					<div class="row placeholders">
-						<div id="container" class="chartCls" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+						<div id="container-emotion" class="chartCls" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 					</div>
 
 					<h2 class="sub-header">Images Gallery</h2>
@@ -101,8 +101,7 @@
 						<div class="row fileupload-buttonbar">
 							<div class="col-lg-7">
 								<!-- The fileinput-button span is used to style the file input field as button -->
-								<span class="btn btn-success fileinput-button"> <i
-									class="glyphicon glyphicon-plus"></i> <span>Add files...</span>
+								<span class="btn btn-success fileinput-button"> <i class="glyphicon glyphicon-plus"></i> <span>Add files...</span>
 									<input type="file" name="files[]" multiple>
 								</span>
 								<button type="submit" class="btn btn-primary start">
@@ -211,6 +210,10 @@
 			<i class="glyphicon glyphicon-upload"></i>
 			<span>Start</span>
 			</button>
+			<button class="btn btn-primary testClass" >
+			<i class="glyphicon glyphicon-upload"></i>
+			<span>test</span>
+			</button>
 			{% } %}
 			{% if (!i) { %}
 			<button class="btn btn-warning cancel">
@@ -262,8 +265,8 @@
 			</button>
 			{% } %}
 			{% if (file.emotionUrl) { %}
-			<button class="btn btn-primary charts"  onclick="" >
-			<i class="glyphicon"></i>
+			<button url="{%=file.emotionUrl%}" class="btn btn-primary emotion" >
+			<i class="glyphicon glyphicons-icon charts"></i>
 			<span>EmotionView</span>
 			</button>
 			{% } %}

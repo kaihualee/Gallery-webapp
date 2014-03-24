@@ -71,7 +71,7 @@ public class ImageController {
 
     @RequestMapping(value = "/upload", method = RequestMethod.GET)
     public @ResponseBody
-    Map list() {
+    List list() {
         log.debug("uploadGet called");
         List<ImageEntity> images = imageDao.getAll();
         List<ImageVO> list = new ArrayList<>();
@@ -81,11 +81,10 @@ public class ImageController {
             imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
             imageVO.setDeleteUrl("/action/delete/" + entity.getId());
             imageVO.setDeleteType("DELETE");
+            list.add(imageVO);
         }
-        Map<String, Object> files = new HashMap<>();
-        files.put("files", list);
-        log.debug("Returning: {}", files);
-        return files;
+        log.debug("Returning: {}", list);
+        return list;
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
