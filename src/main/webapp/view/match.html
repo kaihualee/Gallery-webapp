@@ -71,12 +71,6 @@
 				<!-- right images sidebar -->
 				<div class="col-sm-3 col-sm-offset-9 col-md-2  col-md-offset-10 sidebar">
 					<ul class="nav nav-sidebar" id="image-gallery">
-						<li class="thumbnail image-list">
-							<img src="../tmp/0.jpg" alt="1" />
-						</li>
-						<li class="thumbnail image-list">
-							<img src="../tmp/1.jpg" alt="2" />
-						</li>
 					</ul>
 				</div>
 				<!-- main frame-->
@@ -94,20 +88,20 @@
 
 									<!-- Single button -->
 									<div class="btn-group">
-										<button id="dropButton" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+										<button id="dropButton" option="0" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
 											Auto<span class="caret"></span>
 										</button>
 										<ul class="dropdown-menu" role="menu">
-											<li class="dropMenuList">
+											<li class="dropMenuList" option="0" >
 												<a>Auto</a>
 											</li>
-											<li class="dropMenuList">
+											<li class="dropMenuList" option="1" >
 												<a>Percentage</a>
 											</li>
-											<li class="dropMenuList">
+											<li class="dropMenuList" option="2" >
 												<a>Nearest Hue</a>
 											</li>
-											<li class="dropMenuList">
+											<li class="dropMenuList" option="3" >
 												<a>Light</a>
 											</li>
 										</ul>
@@ -126,7 +120,7 @@
 						</div>
 						<div class="col-sm-6 col-md-6">
 							<div class="thumbnail">
-								<img alt="300x200" data-src="holder.js/450x300" style="width: 300; height: 200px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE5cHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MzAweDIwMDwvdGV4dD48L3N2Zz4=" >
+								<img id="resultImg" alt="300x200" data-src="holder.js/450x300" style="width: 300; height: 200px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE5cHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MzAweDIwMDwvdGV4dD48L3N2Zz4=" >
 								<div class="caption">
 									<h3>Thumbnail label</h3>
 									<p>
@@ -151,6 +145,6 @@
 			<script src="../js/jquery.iframe-transport.js"></script>
 			<!-- The basic File Upload plugin -->
 			<script src="../js/jquery.fileupload.js"></script>
-			<script src="../js/match.main..js"></script>
+			<script src="../js/match.main.js"></script>
 	</body>
 </html>

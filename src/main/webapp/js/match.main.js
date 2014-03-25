@@ -2,8 +2,15 @@ $(function() {'use strict';
 	var url = "/action/upload";
 	$.getJSON(url, function(jsons) {
 		$.each(jsons, function(index, imgObj) {
-			console.log(imgObj.thumbnailUrl);
-			$("<li class='thumbnail image-list'> <img src= " + imgObj.thumbnailUrl + "/> </li>").appendTo('#image-gallery');
+			var thumbnailUrl = imgObj.thumbnailUrl;
+			var id = thumbnailUrl.substring(thumbnailUrl.lastIndexOf('/') + 1, thumbnailUrl.length);
+			$("<li class='thumbnail image-list'> <img src= " + imgObj.thumbnailUrl + " id=" + id + " /> </li>").appendTo('#image-gallery').on('click', function() {
+				var mimage_id = $('img', this).attr('id');
+				var simage_id = $('#previewImg').attr('image_id');
+				var option = $('#dropButton').attr('option');
+				var dst_url = "/action/match" + simage_id + "+" + mimage_id + ";" + option;
+				$('#resultImg').attr('src', "/action/thumbnail/" + mimage_id);
+			});
 		});
 	});
 	// Call the dropdowns via JavaScript:
@@ -11,6 +18,7 @@ $(function() {'use strict';
 	$('.dropMenuList').click(function() {
 		// console.log($(this).text() + '<span class="caret"></span>');
 		$('#dropButton').html($(this).text() + '<span class="caret"></span>');
+		$('#dropButton').attr('option', $(this).attr('option'));
 	});
 	// Initialize the jQuery File Upload widget:
 	$('#fileupload').fileupload({
@@ -30,6 +38,9 @@ $(function() {'use strict';
 			}
 		},
 		done : function(e, data) {
+			var thumbnailUrl = data.result.files[0].thumbnailUrl;
+			var id = thumbnailUrl.substring(thumbnailUrl.lastIndexOf('/') + 1, thumbnailUrl.length);
+			$('img#previewImg').attr('image_id', id);
 			console.log('Upload finished.');
 		},
 		fail : function(e, data) {
@@ -42,10 +53,4 @@ $(function() {'use strict';
 	});
 	// Enable iframe cross-domain access via redirect option:
 	$('#fileupload').fileupload('option', 'redirect', window.location.href.replace(/\/[^\/]*$/, '/cors/result.html?%s'));
-
-	$('.image-list').click(function(e, data) {
-		console.log($(this).text());
-		console.log($('img', this).attr('alt'));
-		$(this).clone().insertAfter($(this));
-	});
 });
