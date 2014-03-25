@@ -170,8 +170,8 @@ public class ImageController {
             + thumbnail_suffix;
         File imageFile = new File(fileUploadDirectory + "/" + thumbnailFilename);
 
-        response.setContentType(entity.getContentType());
-        response.setContentLength(entity.getSize().intValue());
+        response.setContentType("image/png");
+        response.setContentLength((int)imageFile.length());
         try {
             InputStream is = new FileInputStream(imageFile);
             IOUtils.copy(is, response.getOutputStream());

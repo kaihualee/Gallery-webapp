@@ -4,7 +4,7 @@ $(function() {'use strict';
 		$.each(jsons, function(index, imgObj) {
 			var thumbnailUrl = imgObj.thumbnailUrl;
 			var id = thumbnailUrl.substring(thumbnailUrl.lastIndexOf('/') + 1, thumbnailUrl.length);
-			$("<li class='thumbnail image-list'> <img src= " + imgObj.thumbnailUrl + " id=" + id + " /> </li>").appendTo('#image-gallery').on('click', function() {
+			$("<li class='thumbnail '> <img class='image-list' src= " + imgObj.thumbnailUrl + " id=" + id + " /> </li>").appendTo('#image-gallery').on('click', function() {
 				var mimage_id = $('img', this).attr('id');
 				var simage_id = $('#previewImg').attr('image_id');
 				var option = $('#dropButton').attr('option');
