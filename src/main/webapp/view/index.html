@@ -210,10 +210,6 @@
 			<i class="glyphicon glyphicon-upload"></i>
 			<span>Start</span>
 			</button>
-			<button class="btn btn-primary testClass" >
-			<i class="glyphicon glyphicon-upload"></i>
-			<span>test</span>
-			</button>
 			{% } %}
 			{% if (!i) { %}
 			<button class="btn btn-warning cancel">
@@ -265,10 +261,7 @@
 			</button>
 			{% } %}
 			{% if (file.emotionUrl) { %}
-			<button url="{%=file.emotionUrl%}" class="btn btn-primary emotion" >
-			<i class="glyphicon glyphicons-icon charts"></i>
-			<span>EmotionView</span>
-			</button>
+			<a  id="{%=file.emotionUrl%}" class="btn btn-primary emotion">EmotionChart</a>
 			{% } %}
 			</td>
 			</tr>

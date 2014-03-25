@@ -1,12 +1,6 @@
 var chart;
-// $('div#container.chartCls').
 function getEmotion(url) {
-	alert(url);
 	$.getJSON(url, function(json) {
-		console.log("second success");
-		console.log("JSON Data: " + json.activities);
-		console.log("JSON Data: " + json.heats);
-		console.log("JSON Data: " + json.weights);
 		chart.series[0].setData(json.activities);
 		chart.series[1].setData(json.weights);
 		chart.series[2].setData(json.heats);
@@ -14,6 +8,11 @@ function getEmotion(url) {
 }
 
 $(function() {
+	$(".files").on('click', '.emotion', function(e){
+		e.stopPropagation();
+		var url=$(this).attr('id');
+		getEmotion(url);
+	});
 	chart = new Highcharts.Chart({
 		chart : {
 			renderTo : 'container-emotion', // 在哪个区域呈现，对应HTML中的一个元素ID
