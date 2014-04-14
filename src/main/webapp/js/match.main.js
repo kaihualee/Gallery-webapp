@@ -8,8 +8,25 @@ $(function() {'use strict';
 				var mimage_id = $('img', this).attr('id');
 				var simage_id = $('#previewImg').attr('image_id');
 				var option = $('#dropButton').attr('option');
-				var dst_url = "/action/match" + simage_id + "+" + mimage_id + ";" + option;
-				$('#resultImg').attr('src', "/action/thumbnail/" + mimage_id);
+				var url = "/action/convert?id1=" + simage_id + "&id2=" + mimage_id;
+//				$.ajax({
+//					  url: url,
+//					  dataType: 'json',
+//					  success: function(result){
+//					    alert("success token recieved: " + result.token);
+//					  },
+//					  error: function(request, textStatus, errorThrown) {
+//					    alert(textStatus);
+//					  },
+//					  complete: function(request, textStatus) { //for additional info
+//					    alert(request.responseText);
+//					    alert(textStatus);
+//					  }
+//					});
+				$.getJSON(url,function(data){
+					console.log(data);
+					$('#resultImg').attr('src', "/action/download/" + data.filename+"?" + new Date().getTime());
+				});
 			});
 		});
 	});

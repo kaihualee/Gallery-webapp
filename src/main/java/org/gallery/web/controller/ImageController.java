@@ -39,6 +39,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -49,182 +50,224 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @Controller
 @RequestMapping
 public class ImageController {
-    private static final Logger log = LoggerFactory
-        .getLogger(ImageController.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(ImageController.class);
 
-    @Autowired
-    private ImageDao imageDao;
+	@Autowired
+	private ImageDao imageDao;
 
-    @Autowired
-    @Value(value = "#{'${app.filesystem.dir}'}")
-    private String fileUploadDirectory;
+	@Autowired
+	@Value(value = "#{'${app.filesystem.dir}'}")
+	private String fileUploadDirectory;
 
-    final String thumbnail_suffix = "-thumbnail.png";
+	@Autowired
+	@Value(value = "#{'${cmd}'}")
+	private String cmd;
 
-    private final static ObjectMapper mapper = new ObjectMapper();
+	final String thumbnail_suffix = "-thumbnail.png";
 
-    @RequestMapping
-    public String index() {
-        log.debug("ImageController home");
-        return "image/index";
-    }
+	private final static ObjectMapper mapper = new ObjectMapper();
 
-    @RequestMapping(value = "/upload", method = RequestMethod.GET)
-    public @ResponseBody
-    List list() {
-        log.debug("uploadGet called");
-        List<ImageEntity> images = imageDao.getAll();
-        List<ImageVO> list = new ArrayList<>();
-        for (ImageEntity entity: images) {
-            ImageVO imageVO = new ImageVO(entity);
-            imageVO.setUrl("/action/picture/" + entity.getId());
-            imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
-            imageVO.setDeleteUrl("/action/delete/" + entity.getId());
-            imageVO.setDeleteType("DELETE");
-            list.add(imageVO);
-        }
-        log.debug("Returning: {}", list);
-        return list;
-    }
+	@RequestMapping
+	public String index() {
+		log.debug("ImageController home");
+		return "image/index";
+	}
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody
-    Map upload(MultipartHttpServletRequest request, HttpServletResponse response) {
-        log.info("uploadPost called");
-        Iterator<String> itr = request.getFileNames();
-        MultipartFile mpf;
-        List<ImageVO> list = new LinkedList<>();
+	@RequestMapping(value = "/upload", method = RequestMethod.GET)
+	public @ResponseBody
+	List list() {
+		log.debug("uploadGet called");
+		List<ImageEntity> images = imageDao.getAll();
+		List<ImageVO> list = new ArrayList<>();
+		for (ImageEntity entity : images) {
+			ImageVO imageVO = new ImageVO(entity);
+			imageVO.setUrl("/action/picture/" + entity.getId());
+			imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
+			imageVO.setDeleteUrl("/action/delete/" + entity.getId());
+			imageVO.setDeleteType("DELETE");
+			list.add(imageVO);
+		}
+		log.debug("Returning: {}", list);
+		return list;
+	}
 
-        while (itr.hasNext()) {
-            mpf = request.getFile(itr.next());
-            log.info("Uploading {}", mpf.getOriginalFilename());
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public @ResponseBody
+	Map upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+		log.info("uploadPost called");
+		Iterator<String> itr = request.getFileNames();
+		MultipartFile mpf;
+		List<ImageVO> list = new LinkedList<>();
 
-            String newFilenameBase = UUID.randomUUID().toString();
-            String originalFileExtension = mpf.getOriginalFilename().substring(
-                mpf.getOriginalFilename().lastIndexOf("."));
-            String newFilename = newFilenameBase + originalFileExtension;
-            String storageDirectory = fileUploadDirectory;
-            String contentType = mpf.getContentType();
+		while (itr.hasNext()) {
+			mpf = request.getFile(itr.next());
+			log.info("Uploading {}", mpf.getOriginalFilename());
 
-            File newFile = new File(storageDirectory + "/" + newFilename);
-            try {
-                mpf.transferTo(newFile);
+			String newFilenameBase = UUID.randomUUID().toString();
+			String originalFileExtension = mpf.getOriginalFilename().substring(
+					mpf.getOriginalFilename().lastIndexOf("."));
+			String newFilename = newFilenameBase + originalFileExtension;
+			String storageDirectory = fileUploadDirectory;
+			String contentType = mpf.getContentType();
 
-                BufferedImage thumbnail = Scalr.resize(ImageIO.read(newFile),
-                    290);
-                String thumbnailFilename = newFilenameBase + thumbnail_suffix;
-                File thumbnailFile = new File(storageDirectory + "/"
-                    + thumbnailFilename);
-                ImageIO.write(thumbnail, "png", thumbnailFile);
+			File newFile = new File(storageDirectory + "/" + newFilename);
+			try {
+				mpf.transferTo(newFile);
 
-                ImageEntity entity = EmotionParser.parse(ImageIO.read(newFile));
-                //ImageEntity entity = new ImageEntity();
-                entity.setName(mpf.getOriginalFilename());
-                // entity.setThumbnailFilename(thumbnailFilename);
-                entity.setNewFilename(newFilename);
-                entity.setContentType(contentType);
-                entity.setSize(mpf.getSize());
-                imageDao.save(entity);
+				BufferedImage thumbnail = Scalr.resize(ImageIO.read(newFile),
+						290);
+				String thumbnailFilename = newFilenameBase + thumbnail_suffix;
+				File thumbnailFile = new File(storageDirectory + "/"
+						+ thumbnailFilename);
+				ImageIO.write(thumbnail, "png", thumbnailFile);
 
-                ImageVO imageVO = new ImageVO(entity);
-                imageVO.setUrl("/action/picture/" + entity.getId());
-                imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
-                imageVO.setDeleteUrl("/action/delete/" + entity.getId());
-                imageVO.setEmotionUrl("/action/emotion/" + entity.getId());
-                imageVO.setDeleteType("DELETE");
+				ImageEntity entity = EmotionParser.parse(ImageIO.read(newFile));
+				// ImageEntity entity = new ImageEntity();
+				entity.setName(mpf.getOriginalFilename());
+				// entity.setThumbnailFilename(thumbnailFilename);
+				entity.setNewFilename(newFilename);
+				entity.setContentType(contentType);
+				entity.setSize(mpf.getSize());
+				imageDao.save(entity);
 
-                list.add(imageVO);
+				ImageVO imageVO = new ImageVO(entity);
+				imageVO.setUrl("/action/picture/" + entity.getId());
+				imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
+				imageVO.setDeleteUrl("/action/delete/" + entity.getId());
+				imageVO.setEmotionUrl("/action/emotion/" + entity.getId());
+				imageVO.setDeleteType("DELETE");
 
-            } catch (IOException e) {
-                log.error("Could not upload file " + mpf.getOriginalFilename(),
-                    e);
-            }
+				list.add(imageVO);
 
-        }
+			} catch (IOException e) {
+				log.error("Could not upload file " + mpf.getOriginalFilename(),
+						e);
+			}
 
-        Map<String, Object> files = new HashMap<>();
-        files.put("files", list);
-        return files;
-    }
+		}
 
-    @RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
-    public void picture(HttpServletResponse response, @PathVariable Long id) {
-        ImageEntity entity = imageDao.get(id);
-        File imageFile = new File(fileUploadDirectory + "/"
-            + entity.getNewFilename());
-        response.setContentType(entity.getContentType());
-        response.setContentLength(entity.getSize().intValue());
-        try {
-            InputStream is = new FileInputStream(imageFile);
-            IOUtils.copy(is, response.getOutputStream());
-        } catch (IOException e) {
-            log.error("Could not show picture " + id, e);
-        }
-    }
+		Map<String, Object> files = new HashMap<>();
+		files.put("files", list);
+		return files;
+	}
 
-    @RequestMapping(value = "/thumbnail/{id}", method = RequestMethod.GET)
-    public void thumbnail(HttpServletResponse response, @PathVariable Long id) {
-        ImageEntity entity = imageDao.get(id);
-        String thumbnailFilename = entity.getNewFilename().substring(0,
-            entity.getNewFilename().lastIndexOf('.'))
-            + thumbnail_suffix;
-        File imageFile = new File(fileUploadDirectory + "/" + thumbnailFilename);
+	@RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
+	public void picture(HttpServletResponse response, @PathVariable Long id) {
+		ImageEntity entity = imageDao.get(id);
+		File imageFile = new File(fileUploadDirectory + "/"
+				+ entity.getNewFilename());
+		response.setContentType(entity.getContentType());
+		response.setContentLength(entity.getSize().intValue());
+		try {
+			InputStream is = new FileInputStream(imageFile);
+			IOUtils.copy(is, response.getOutputStream());
+		} catch (IOException e) {
+			log.error("Could not show picture " + id, e);
+		}
+	}
 
-        response.setContentType("image/png");
-        response.setContentLength((int)imageFile.length());
-        try {
-            InputStream is = new FileInputStream(imageFile);
-            IOUtils.copy(is, response.getOutputStream());
-        } catch (IOException e) {
-            log.error("Could not show thumbnail " + id, e);
-        }
-    }
+	@RequestMapping(value = "/thumbnail/{id}", method = RequestMethod.GET)
+	public void thumbnail(HttpServletResponse response, @PathVariable Long id) {
+		ImageEntity entity = imageDao.get(id);
+		String thumbnailFilename = entity.getNewFilename().substring(0,
+				entity.getNewFilename().lastIndexOf('.'))
+				+ thumbnail_suffix;
+		File imageFile = new File(fileUploadDirectory + "/" + thumbnailFilename);
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody
-    List delete(@PathVariable Long id) {
-        ImageEntity entity = imageDao.get(id);
-        File imageFile = new File(fileUploadDirectory + "/"
-            + entity.getNewFilename());
-        imageFile.delete();
-        String thumbnailFilename = entity.getNewFilename().substring(0,
-            entity.getNewFilename().lastIndexOf('.'))
-            + thumbnail_suffix;
-        File thumbnailFile = new File(fileUploadDirectory + "/"
-            + thumbnailFilename);
-        thumbnailFile.delete();
-        imageDao.deleteById(entity.getId());
-        List<Map<String, Object>> results = new ArrayList<>();
-        Map<String, Object> success = new HashMap<>();
-        success.put("success", true);
-        results.add(success);
-        return results;
-    }
+		response.setContentType("image/png");
+		response.setContentLength((int) imageFile.length());
+		try {
+			InputStream is = new FileInputStream(imageFile);
+			IOUtils.copy(is, response.getOutputStream());
+		} catch (IOException e) {
+			log.error("Could not show thumbnail " + id, e);
+		}
+	}
 
-    @RequestMapping(value = "/emotion/{id}", method = RequestMethod.GET)
-    public @ResponseBody
-    Map emotion(@PathVariable Long id) {
-        ImageEntity entity = imageDao.get(id);
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody
+	List delete(@PathVariable Long id) {
+		ImageEntity entity = imageDao.get(id);
+		File imageFile = new File(fileUploadDirectory + "/"
+				+ entity.getNewFilename());
+		imageFile.delete();
+		String thumbnailFilename = entity.getNewFilename().substring(0,
+				entity.getNewFilename().lastIndexOf('.'))
+				+ thumbnail_suffix;
+		File thumbnailFile = new File(fileUploadDirectory + "/"
+				+ thumbnailFilename);
+		thumbnailFile.delete();
+		imageDao.deleteById(entity.getId());
+		List<Map<String, Object>> results = new ArrayList<>();
+		Map<String, Object> success = new HashMap<>();
+		success.put("success", true);
+		results.add(success);
+		return results;
+	}
 
-        Map<String, Object> results = new HashMap<>();
-        float[] heats = null;
-        float[] activities = null;
-        float[] weights = null;
-        try {
-            heats = mapper.readValue(entity.getHeats().getBinaryStream(),
-                float[].class);
-            activities = mapper.readValue(entity.getActivities()
-                .getBinaryStream(), float[].class);
-            weights = mapper.readValue(entity.getWeights().getBinaryStream(),
-                float[].class);
-        } catch (IOException | SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        results.put("activities", activities);
-        results.put("weights", weights);
-        results.put("heats", heats);
-        log.debug(Arrays.toString(activities));
-        return results;
-    }
+	@RequestMapping(value = "/emotion/{id}", method = RequestMethod.GET)
+	public @ResponseBody
+	Map emotion(@PathVariable Long id) {
+		ImageEntity entity = imageDao.get(id);
+
+		Map<String, Object> results = new HashMap<>();
+		float[] heats = null;
+		float[] activities = null;
+		float[] weights = null;
+		try {
+			heats = mapper.readValue(entity.getHeats().getBinaryStream(),
+					float[].class);
+			activities = mapper.readValue(entity.getActivities()
+					.getBinaryStream(), float[].class);
+			weights = mapper.readValue(entity.getWeights().getBinaryStream(),
+					float[].class);
+		} catch (IOException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		results.put("activities", activities);
+		results.put("weights", weights);
+		results.put("heats", heats);
+		log.debug(Arrays.toString(activities));
+		return results;
+	}
+
+	@RequestMapping(value = "/convert", params = { "id1", "id2" }, method = RequestMethod.GET)
+	@ResponseBody
+	public Map convert(@RequestParam("id1") long src,
+			@RequestParam("id2") long dest) {
+		String srcImagePath = fileUploadDirectory + File.separator
+				+ imageDao.get(src).getNewFilename();
+		String destImagePath = fileUploadDirectory + File.separator
+				+ imageDao.get(dest).getNewFilename();
+		String cmdLine = "";
+		try {
+			cmdLine = cmd + " " + srcImagePath + " " + destImagePath;
+			log.info("cmdLine:" + cmdLine);
+			Runtime.getRuntime().exec(cmdLine);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.error("conver?id1=" + src + "id2=" + dest, e);
+		}
+		Map success = new HashMap<String, String>();
+		success.put("filename", "converted.jpg");
+		return success;
+	}
+
+	@RequestMapping(value = "/download/{name:.+}", method = RequestMethod.GET)
+	public void download(HttpServletResponse response,
+			@PathVariable("name") String name) {
+		String realPath = fileUploadDirectory + File.separator + name;
+		File imageFile = new File(realPath);
+		response.setContentType("image/png");
+		response.setContentLength((int) imageFile.length());
+		try {
+			InputStream is = new FileInputStream(imageFile);
+			IOUtils.copy(is, response.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not  download " + name, e);
+		}
+	}
 }
