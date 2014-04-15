@@ -12,7 +12,7 @@
 	<artifactId>gallery-webapp</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>ColorImage-webapp Maven Webapp</name>
+	<name>gallery-webapp Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -285,10 +285,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>3.6.10.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
