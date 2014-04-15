@@ -97,7 +97,8 @@
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<webAppConfig>
-						<contextPath>/</contextPath>
+						<contextPath>/Gallery-webapp</contextPath>
+						 <defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
 					</webAppConfig>
 				</configuration>
 			</plugin>
