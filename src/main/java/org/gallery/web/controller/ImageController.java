@@ -65,6 +65,8 @@ public class ImageController {
 	private String cmd;
 
 	final String thumbnail_suffix = "-thumbnail.png";
+	
+	final String url_prefix = "../action";
 
 	private final static ObjectMapper mapper = new ObjectMapper();
 
@@ -82,9 +84,9 @@ public class ImageController {
 		List<ImageVO> list = new ArrayList<>();
 		for (ImageEntity entity : images) {
 			ImageVO imageVO = new ImageVO(entity);
-			imageVO.setUrl("/action/picture/" + entity.getId());
-			imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
-			imageVO.setDeleteUrl("/action/delete/" + entity.getId());
+			imageVO.setUrl(url_prefix+"/picture/" + entity.getId());
+			imageVO.setThumbnailUrl(url_prefix+"/thumbnail/" + entity.getId());
+			imageVO.setDeleteUrl(url_prefix+"/delete/" + entity.getId());
 			imageVO.setDeleteType("DELETE");
 			list.add(imageVO);
 		}
@@ -132,10 +134,10 @@ public class ImageController {
 				imageDao.save(entity);
 
 				ImageVO imageVO = new ImageVO(entity);
-				imageVO.setUrl("/action/picture/" + entity.getId());
-				imageVO.setThumbnailUrl("/action/thumbnail/" + entity.getId());
-				imageVO.setDeleteUrl("/action/delete/" + entity.getId());
-				imageVO.setEmotionUrl("/action/emotion/" + entity.getId());
+				imageVO.setUrl(url_prefix+"/picture/" + entity.getId());
+				imageVO.setThumbnailUrl(url_prefix+"/thumbnail/" + entity.getId());
+				imageVO.setDeleteUrl(url_prefix+"/delete/" + entity.getId());
+				imageVO.setEmotionUrl(url_prefix+"/emotion/" + entity.getId());
 				imageVO.setDeleteType("DELETE");
 
 				list.add(imageVO);

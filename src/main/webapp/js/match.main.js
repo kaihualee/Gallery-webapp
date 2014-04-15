@@ -1,5 +1,5 @@
 $(function() {'use strict';
-	var url = "/action/upload";
+	var url = "../action/upload";
 	$.getJSON(url, function(jsons) {
 		$.each(jsons, function(index, imgObj) {
 			var thumbnailUrl = imgObj.thumbnailUrl;
@@ -8,7 +8,7 @@ $(function() {'use strict';
 				var mimage_id = $('img', this).attr('id');
 				var simage_id = $('#previewImg').attr('image_id');
 				var option = $('#dropButton').attr('option');
-				var url = "/action/convert?id1=" + simage_id + "&id2=" + mimage_id;
+				var url = "../action/convert?id1=" + simage_id + "&id2=" + mimage_id;
 //				$.ajax({
 //					  url: url,
 //					  dataType: 'json',
@@ -25,7 +25,7 @@ $(function() {'use strict';
 //					});
 				$.getJSON(url,function(data){
 					console.log(data);
-					$('#resultImg').attr('src', "/action/download/" + data.filename+"?" + new Date().getTime());
+					$('#resultImg').attr('src', "../action/download/" + data.filename+"?" + new Date().getTime());
 				});
 			});
 		});
@@ -42,7 +42,7 @@ $(function() {'use strict';
 		// Uncomment the following to send cross-domain cookies:
 		// xhrFields: {withCredentials: true},
 		maxNumberOfFiles : 1,
-		url : '/action/upload',
+		url : '../action/upload',
 		dataType : 'json',
 		add : function(e, data) {
 			if (data.files && data.files[0]) {
