@@ -1,7 +1,7 @@
 $(function() {
 
 	// Debug JavaScript
-	// loadImage("../tmp/Desert.jpg", "sourceDiv", true);
+	appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
 
 	messages = {
 		// Error
@@ -50,12 +50,7 @@ $(function() {
 						dataType : urls.upload[2],
 						add : function(e, data) {
 							if (data.files && data.files[0]) {
-								var reader = new FileReader();
-								reader.onload = function(e) {
-									prepareLoading("sourceDiv", true);
-									// e.target.result);
-								};
-								reader.readAsDataURL(data.files[0]);
+								prepareLoading("sourceDiv", true);
 								data.submit();
 							}
 						},
@@ -91,7 +86,7 @@ $(function() {
 						progressall : function(e, data) {
 							var progress = parseInt(data.loaded / data.total
 									* 100, 10);
-							$('#progress .progress-bar').css('width',
+							$('#progress #img-progress-bar').css('width',
 									progress + '%').text(progress);
 						}
 					});
@@ -113,6 +108,7 @@ function prepareLoading(containerId, empty) {
 
 function appendImageTo(url, containerId) {
 	var container = "#" + containerId;
+	
 	// loading image with jquery effect
 	var img = new Image();
 	$(img).load(function() {
@@ -122,17 +118,6 @@ function appendImageTo(url, containerId) {
 		$(container).removeClass("loading").append(this);
 		// 使用fadeIn特效
 		$(this).fadeIn("slow");
-		// $(".zoom").anythingZoomer({
-		// overlay : true,
-		// edit : true,
-		// // If you need to make the left top corner be at
-		// // exactly 0,0, adjust the offset values below
-		// offsetX : 0,
-		// offsetY : 0,
-		// clone : true,
-		// overlay : true
-		// });
-		// $('.az-large-inner img').css("opacity", 50);
 	}).error(function() {
 		var message = messages.loading_img_error;
 		$('.' + message[0]).notify({
@@ -184,12 +169,12 @@ function getThumbnails(btnId, url) {
 				$.each(data, function(index, img) {
 					var element = tmpl_func(img);
 					//$('#image-thumbnails').append(element);
-					$(element).insertBefore($(btn));
+					$(element).appendTo($('#img-thumbnails',$(btn).parent()));
 					$(element).fadeIn("slow");
 					console.log(tmpl_func(img));
 				});
 				// customer click event handler
-				$('.image-list').on("click", matchImage);
+				$('.thumbnail-img').on("click", matchImage);
 
 			}
 

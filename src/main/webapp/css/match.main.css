@@ -1,12 +1,15 @@
-.image-list {
+.thumbnail-img {
 	width: 150px;
 	height: 150px;
+}
+#img-thumbnails {
+	margin: 0;
+	padding: 0;
 }
 .small img {
 	width: 700px;
 }
 .loading {
 	height: 500px;
-	background: url("../img/loading.gif") no-repeat scroll center center
-		rgba(255, 255, 255, 0);
+	background: url("../img/loading.gif") no-repeat scroll center centerrgba(255, 255, 255, 0);
 }
