@@ -7,11 +7,13 @@
 package org.gallery.web.controller;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,15 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.gallery.common.ThumbnailSize;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.ImageDao;
 import org.gallery.persist.utils.PageBean;
-import org.gallery.web.utils.EmotionParser;
 import org.gallery.web.vo.ImageVO;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
@@ -65,12 +70,6 @@ public class ImageController {
 	@Autowired
 	@Value(value = "#{'${cmd}'}")
 	private String cmd;
-
-	final String thumbnailFormatName = "jpg";
-
-	final String THUMBNAILNAME_SUFFIX = "-thumbnail." + thumbnailFormatName;
-
-	final int THUMBNAIL_SIZE = 150;
 
 	final String BASE_URL = "../action";
 
@@ -112,32 +111,52 @@ public class ImageController {
 			String originalFilename = mpf.getOriginalFilename();
 			log.info("Uploading {}", originalFilename);
 
-			String newFilenameBase = UUID.randomUUID().toString();
-			String originalFileExtension = originalFilename
-					.substring(originalFilename.lastIndexOf("."));
-			String newFilename = newFilenameBase + originalFileExtension;
+			String newFilenameBase = "-" + UUID.randomUUID().toString();
 			String storageDirectory = fileUploadDirectory;
 			String contentType = mpf.getContentType();
+			String newFilename = newFilenameBase;
 
-			File newFile = new File(storageDirectory + File.separatorChar
-					+ newFilename);
 			try {
-				mpf.transferTo(newFile);
+				// Save Images
+				// mpf.transferTo(newFile);
+				BufferedImage originalImage = ImageIO
+						.read(new ByteArrayInputStream(mpf.getBytes()));
 
-				BufferedImage thumbnail = Scalr.resize(ImageIO.read(newFile),
-						THUMBNAIL_SIZE);
-				String thumbnailFilename = newFilenameBase
-						+ THUMBNAILNAME_SUFFIX;
-				File thumbnailFile = new File(storageDirectory
-						+ File.separatorChar + thumbnailFilename);
-				ImageIO.write(thumbnail, thumbnailFormatName, thumbnailFile);
+				// Small Thumbnails
+				BufferedImage thumbnail_small = Scalr.resize(originalImage,
+						ThumbnailSize.SMALL_SIZE.getSize());
+				compressImg(thumbnail_small,
+						new File(storageDirectory + File.separatorChar
+								+ ThumbnailSize.SMALL_SIZE.getId()
+								+ newFilenameBase + "."
+								+ ThumbnailSize.SMALL_SIZE.getFormatName()),
+						ThumbnailSize.SMALL_SIZE.getCompressionQuality());
+
+				// Medium Thumbnail
+				BufferedImage thumbnail_medium = Scalr.resize(originalImage,
+						ThumbnailSize.MEDIUM_SIZE.getSize());
+				compressImg(thumbnail_medium,
+						new File(storageDirectory + File.separatorChar
+								+ ThumbnailSize.MEDIUM_SIZE.getId()
+								+ newFilenameBase + "."
+								+ ThumbnailSize.MEDIUM_SIZE.getFormatName()),
+						ThumbnailSize.MEDIUM_SIZE.getCompressionQuality());
+
+				// Big Thumbnails
+				BufferedImage thumbnail_big = Scalr.resize(originalImage,
+						ThumbnailSize.BIG_SIZE.getSize());
+				compressImg(thumbnail_big,
+						new File(storageDirectory + File.separatorChar
+								+ ThumbnailSize.BIG_SIZE.getId()
+								+ newFilenameBase + "."
+								+ ThumbnailSize.BIG_SIZE.getFormatName()),
+						ThumbnailSize.BIG_SIZE.getCompressionQuality());
 
 				log.info("EmotionParser...");
 				// ImageEntity entity =
 				// EmotionParser.parse(ImageIO.read(newFile));
 				ImageEntity entity = new ImageEntity();
 				entity.setName(originalFilename);
-				// entity.setThumbnailFilename(thumbnailFilename);
 				entity.setNewFilename(newFilename);
 				entity.setContentType(contentType);
 				entity.setSize(mpf.getSize());
@@ -157,9 +176,7 @@ public class ImageController {
 			} catch (IOException e) {
 				log.error("Could not upload file " + originalFilename, e);
 			}
-
 		}
-
 		Map<String, Object> files = new HashMap<>();
 		files.put("files", list);
 		return files;
@@ -168,10 +185,15 @@ public class ImageController {
 	@RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
 	public void picture(HttpServletResponse response, @PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
+		ThumbnailSize THUMBNAL_ENUM = ThumbnailSize.MEDIUM_SIZE;
+		String thumbnailFilename = THUMBNAL_ENUM.getId()
+				+ entity.getNewFilename() + "." + THUMBNAL_ENUM.getFormatName();
+
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
-				+ entity.getNewFilename());
-		response.setContentType(entity.getContentType());
-		response.setContentLength(entity.getSize().intValue());
+				+ thumbnailFilename);
+
+		response.setContentType("image/" + THUMBNAL_ENUM.getFormatName());
+		response.setContentLength((int) imageFile.length());
 		try {
 			InputStream is = new FileInputStream(imageFile);
 			IOUtils.copy(is, response.getOutputStream());
@@ -183,14 +205,14 @@ public class ImageController {
 	@RequestMapping(value = "/thumbnail/{id}", method = RequestMethod.GET)
 	public void thumbnail(HttpServletResponse response, @PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
-		String thumbnailFilename = entity.getNewFilename().substring(0,
-				entity.getNewFilename().lastIndexOf('.'))
-				+ THUMBNAILNAME_SUFFIX;
+		ThumbnailSize THUMBNAL_ENUM = ThumbnailSize.SMALL_SIZE;
+		String thumbnailFilename = THUMBNAL_ENUM.getId()
+				+ entity.getNewFilename() + "." + THUMBNAL_ENUM.getFormatName();
+
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ thumbnailFilename);
 
-		response.setContentType("image" + File.separatorChar
-				+ thumbnailFormatName);
+		response.setContentType("image/" + THUMBNAL_ENUM.getFormatName());
 		response.setContentLength((int) imageFile.length());
 		try {
 			InputStream is = new FileInputStream(imageFile);
@@ -207,9 +229,9 @@ public class ImageController {
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ entity.getNewFilename());
 		imageFile.delete();
+
 		String thumbnailFilename = entity.getNewFilename().substring(0,
-				entity.getNewFilename().lastIndexOf('.'))
-				+ THUMBNAILNAME_SUFFIX;
+				entity.getNewFilename().lastIndexOf('.'));
 		File thumbnailFile = new File(fileUploadDirectory + File.separatorChar
 				+ thumbnailFilename);
 		thumbnailFile.delete();
@@ -248,10 +270,10 @@ public class ImageController {
 		return results;
 	}
 
-	@RequestMapping(value = "/convert", params = { "id1", "id2" }, method = RequestMethod.GET)
+	@RequestMapping(value = "/convert", params = { "id1", "id2", "option" }, method = RequestMethod.GET)
 	@ResponseBody
 	public Map convert(@RequestParam("id1") long srcId,
-			@RequestParam("id2") long destId) {
+			@RequestParam("id2") long destId, @RequestParam("option") int option) {
 		String srcImagePath = fileUploadDirectory + File.separator
 				+ imageDao.get(srcId).getNewFilename();
 		String destImagePath = fileUploadDirectory + File.separator
@@ -292,5 +314,41 @@ public class ImageController {
 			// TODO Auto-generated catch block
 			log.error("Could not  download " + name, e);
 		}
+	}
+
+	public static boolean compressImg(BufferedImage src, File outfile, double d) {
+		FileOutputStream out = null;
+		ImageWriter imgWrier;
+		ImageWriteParam imgWriteParams;
+
+		// 指定写图片的方式为 jpg
+		imgWrier = ImageIO.getImageWritersByFormatName("jpg").next();
+		imgWriteParams = new javax.imageio.plugins.jpeg.JPEGImageWriteParam(
+				null);
+		// 要使用压缩，必须指定压缩方式为MODE_EXPLICIT
+		imgWriteParams.setCompressionMode(imgWriteParams.MODE_EXPLICIT);
+		// 这里指定压缩的程度，参数qality是取值0~1范围内，
+		imgWriteParams.setCompressionQuality((float) d);
+		imgWriteParams.setProgressiveMode(imgWriteParams.MODE_DISABLED);
+		ColorModel colorModel = ColorModel.getRGBdefault();
+		// 指定压缩时使用的色彩模式
+		imgWriteParams.setDestinationType(new javax.imageio.ImageTypeSpecifier(
+				colorModel, colorModel.createCompatibleSampleModel(16, 16)));
+
+		try {
+			out = new FileOutputStream(outfile);
+			imgWrier.reset();
+			// 必须先指定 out值，才能调用write方法, ImageOutputStream可以通过任何
+			// OutputStream构造
+			imgWrier.setOutput(ImageIO.createImageOutputStream(out));
+			// 调用write方法，就可以向输入流写图片
+			imgWrier.write(null, new IIOImage(src, null, null), imgWriteParams);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

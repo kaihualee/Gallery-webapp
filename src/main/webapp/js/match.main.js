@@ -5,15 +5,15 @@ $(function() {
 
 	messages = {
 		// Error
-		"upload_require" : [ 'bottom-right', 'info', '请先上传图片.' ],
-		"service_error" : [ 'bottom-right', 'info', '请求服务器出错.' ],
-		"loading_img_error" : [ 'bottom-right', 'info', '加载图片失败.' ],
-		"upload_error" : [ 'bottom-right', 'info', '上传失败.' ],
+		"upload_require" : [ 'bottom-right', 'bangTidy', '请先上传图片.' ],
+		"service_error" : [ 'bottom-right', 'bangTidy', '请求服务器出错.' ],
+		"loading_img_error" : [ 'bottom-right', 'bangTidy', '加载图片失败.' ],
+		"upload_error" : [ 'bottom-right', 'bangTidy', '上传失败.' ],
 		// Info
-		"upload_success" : [ 'bottom-right', 'info', '上传完毕.' ],
-		"no_more" : [ 'bottom-right', 'info', '没有可以加载.' ],
-		"convert_sucess" : [ 'bottom-right', 'info', '图片转换成功.' ],
-		"processing" : [ 'bottom-right', 'info', '正在处理中，请稍等...' ],
+		"upload_success" : [ 'bottom-right', 'bangTidy', '上传完毕.' ],
+		"no_more" : [ 'bottom-right', 'bangTidy', '没有可以加载.' ],
+		"convert_sucess" : [ 'bottom-right', 'bangTidy', '图片转换成功.' ],
+		"processing" : [ 'bottom-right', 'bangTidy', '正在处理中，请稍等...' ],
 	};
 
 	// Url Mapping Information
