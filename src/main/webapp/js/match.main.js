@@ -13,6 +13,7 @@ $(function() {
 		"upload_success" : [ 'bottom-right', 'info', '上传完毕.' ],
 		"no_more" : [ 'bottom-right', 'info', '没有可以加载.' ],
 		"convert_sucess" : [ 'bottom-right', 'info', '图片转换成功.' ],
+		"processing" : [ 'bottom-right', 'info', '正在处理中，请稍等...' ],
 	};
 
 	// Url Mapping Information
@@ -121,17 +122,17 @@ function appendImageTo(url, containerId) {
 		$(container).removeClass("loading").append(this);
 		// 使用fadeIn特效
 		$(this).fadeIn("slow");
-		$(".zoom").anythingZoomer({
-			overlay : true,
-			edit : true,
-			// If you need to make the left top corner be at
-			// exactly 0,0, adjust the offset values below
-			offsetX : 0,
-			offsetY : 0,
-			clone : true,
-			overlay : true
-		});
-		$('.az-large-inner img').css("opacity", 50);
+		// $(".zoom").anythingZoomer({
+		// overlay : true,
+		// edit : true,
+		// // If you need to make the left top corner be at
+		// // exactly 0,0, adjust the offset values below
+		// offsetX : 0,
+		// offsetY : 0,
+		// clone : true,
+		// overlay : true
+		// });
+		// $('.az-large-inner img').css("opacity", 50);
 	}).error(function() {
 		var message = messages.loading_img_error;
 		$('.' + message[0]).notify({
@@ -156,149 +157,108 @@ function getThumbnails(btnId, url) {
 	var func = function() {
 		btn.button('loading');
 		console.log(url);
-		$
-				.ajax({
-					url : $.sprintf(url[0], pageNum),
-					type : url[1],
-					dataType : url[2],
-				})
-				.always(function() {
-					console.log(url + ' complete');
-					btn.button('reset');
-				})
-				.done(
-						function(data) {
-							console.log(url + ' success');
-							console.log(data);
-							if (data.length == 0) {
-								$(btn).addClass("disabled");
-								var message = messages.no_more;
-								$('.' + message[0]).notify({
-									message : {
-										text : message[2]
-									},
-									type : message[1],
-									fadeOut : {
-										delay : 2500
-									}
-								}).show();
-							} else {
-								pageNum++;
-								$.each(data, function(index, img) {
-									$(tmpl_func(img)).insertBefore($(btn));
-									console.log(tmpl_func(img));
-								});
-								// customer click event handler
-								$('.image-list')
-										.on(
-												"click",
-												function(event) {
-													var sid = $('#sourceDiv')
-															.attr('data_id');
-													var tid = $(this)
-															.attr('id');
-													var option = $(
-															'#dropButton')
-															.attr('option');
-													if (sid == -1) {
-														var message = messages.upload_require;
-														$('.' + message[0])
-																.notify(
-																		{
-																			message : {
-																				text : message[2]
-																			},
-																			type : message[1],
-																			fadeOut : {
-																				delay : 2500
-																			}
-																		})
-																.show();
-													} else {
+		$.ajax({
+			url : $.sprintf(url[0], pageNum),
+			type : url[1],
+			dataType : url[2],
+		}).always(function() {
+			console.log(url + ' complete');
+			btn.button('reset');
+		}).done(function(data) {
+			console.log(url + ' success');
+			console.log(data);
+			if (data.length == 0) {
+				$(btn).addClass("disabled");
+				var message = messages.no_more;
+				$('.' + message[0]).notify({
+					message : {
+						text : message[2]
+					},
+					type : message[1],
+					fadeOut : {
+						delay : 2500
+					}
+				}).show();
+			} else {
+				pageNum++;
+				$.each(data, function(index, img) {
+					var element = tmpl_func(img);
+					//$('#image-thumbnails').append(element);
+					$(element).insertBefore($(btn));
+					$(element).fadeIn("slow");
+					console.log(tmpl_func(img));
+				});
+				// customer click event handler
+				$('.image-list').on("click", matchImage);
 
-														console
-																.log(urls.convert);
-														prepareLoading(
-																'resultDiv',
-																true);
-														$
-																.ajax(
-																		{
-																			url : $
-																					.sprintf(
-																							urls.convert[0],
-																							sid,
-																							tid,
-																							option),
-																			type : urls.convert[1],
-																			dataType : urls.convert[2]
-																		})
-																.always(
-																		function() {
-																			console
-																					.log(urls.convert
-																							+ ' complete');
-																		})
-																.fail(
-																		function() {
-																			var message = messages.service_error;
-																			$(
-																					'.'
-																							+ message[0])
-																					.notify(
-																							{
-																								message : {
-																									text : message[2]
-																								},
-																								type : message[1],
-																								fadeOut : {
-																									delay : 2500
-																								}
-																							})
-																					.show();
-																			console
-																					.log(urls.convert
-																							+ ' fail');
-																		})
-																.done(
-																		function(
-																				data) {
-																			var message = messages.convert_sucess;
-																			$(
-																					'.'
-																							+ message[0])
-																					.notify(
-																							{
-																								message : {
-																									text : message[2]
-																								},
-																								type : message[1],
-																								fadeOut : {
-																									delay : 2500
-																								}
-																							})
-																					.show();
-																			console
-																					.log(urls.convert
-																							+ ' success');
-																			console
-																					.log(data);
-																			appendImageTo(
-																					$
-																							.sprintf(
-																									urls.file[0],
-																									data.filename,
-																									new Date()
-																											.getTime()),
-																					"resultDiv");
-																		});
+			}
 
-													}
-												});
-							}
-
-						}).fail(function(jqXHR, textStatus, errorThrown) {
-					var message = messages.service_error;
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			var message = messages.service_error;
+			$('.' + message[0]).notify({
+				message : {
+					text : message[2]
+				},
+				type : message[1],
+				fadeOut : {
+					delay : 2500
+				}
+			}).show();
+			console.log(url + " fail: " + textStatus);
+		});
+	};
+	return func;
+};
+function matchImage(event) {
+	event.stopPropagation();
+	var sid = $('#sourceDiv').attr('data_id');
+	var tid = $(this).attr('id');
+	var option = $('#dropButton').attr('option');
+	if (sid == -1) {
+		var message = messages.upload_require;
+		$('.' + message[0]).notify({
+			message : {
+				text : message[2]
+			},
+			type : message[1],
+			fadeOut : {
+				delay : 2500
+			}
+		}).show();
+	} else {
+		var message = messages.processing;
+		$('.' + message[0]).notify({
+			message : {
+				text : message[2]
+			},
+			type : message[1],
+			fadeOut : {
+				delay : 2500
+			}
+		}).show();
+		console.log(urls.convert);
+		prepareLoading('resultDiv', true);
+		$.ajax({
+			url : $.sprintf(urls.convert[0], sid, tid, option),
+			type : urls.convert[1],
+			dataType : urls.convert[2]
+		}).always(function() {
+			console.log(urls.convert + ' complete');
+		}).fail(function() {
+			var message = messages.service_error;
+			$('.' + message[0]).notify({
+				message : {
+					text : message[2]
+				},
+				type : message[1],
+				fadeOut : {
+					delay : 2500
+				}
+			}).show();
+			console.log(urls.convert + ' fail');
+		}).done(
+				function(data) {
+					var message = messages.convert_sucess;
 					$('.' + message[0]).notify({
 						message : {
 							text : message[2]
@@ -308,8 +268,11 @@ function getThumbnails(btnId, url) {
 							delay : 2500
 						}
 					}).show();
-					console.log(url + " fail: " + textStatus);
+					console.log(urls.convert + ' success');
+					console.log(data);
+					appendImageTo($.sprintf(urls.file[0], data.filename,
+							new Date().getTime()), "resultDiv");
 				});
-	};
-	return func;
-};
+
+	}
+}
