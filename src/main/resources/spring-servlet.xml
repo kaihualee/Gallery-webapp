@@ -20,6 +20,7 @@
 			</list>
 		</property>
 	</bean>
+
 	<!-- Enable annotation driven controllers, validation etc... -->
 	<mvc:annotation-driven />
 	<context:component-scan base-package="org.gallery" />
@@ -51,7 +52,7 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- one of the properties available; the maximum file size in bytes -->
-		<property name="maxUploadSize" value="22204800" />
+		<property name="maxUploadSize" value="2220480000" />
 	</bean>
 
 	<!-- Views mapped in views.properties (PDF, XLS classes, and others) -->

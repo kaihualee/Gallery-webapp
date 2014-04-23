@@ -1,0 +1,12 @@
+.image-list {
+	width: 150px;
+	height: 150px;
+}
+.small img {
+	width: 700px;
+}
+.loading {
+	height: 500px;
+	background: url("../img/loading.gif") no-repeat scroll center center
+		rgba(255, 255, 255, 0);
+}

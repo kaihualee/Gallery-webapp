@@ -6,14 +6,18 @@
  */
 package org.gallery.persist;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.UUID;
 
 import org.gallery.model.ImageEntity;
+import org.gallery.persist.utils.PageBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -27,13 +31,14 @@ public class ImageDaoTest {
     @Autowired
     private ImageDao imageDao;
     
-    final String expected_name = "jdei";
+    String expected_name = "勉励";
     final String expected_contentType = "png";
     final Long expected_size =17148484L;
     final String expected_newFilename = UUID.randomUUID().toString();
     
     @Test
-    public void testSave(){
+    @Transactional
+    public void testSave() throws UnsupportedEncodingException{
         ImageEntity entity = new ImageEntity();
         entity.setName(expected_name);
         entity.setContentType(expected_contentType);
@@ -41,5 +46,15 @@ public class ImageDaoTest {
         entity.setNewFilename(expected_newFilename);
         imageDao.save(entity);
         System.out.println(entity.toString());
+    }
+    
+    @Test
+    public void testGetPageBean(){
+    	PageBean pageBean = new PageBean();
+    	pageBean.setPageNum(3);
+    	List<ImageEntity> list=imageDao.getAll(pageBean);
+    	for(ImageEntity entity : list ){
+    		System.out.println(entity.toString());
+    	}
     }
 }

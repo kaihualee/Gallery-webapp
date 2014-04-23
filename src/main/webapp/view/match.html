@@ -1,150 +1,158 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Image Analytics</title>
-		<!-- Bootstrap styles -->
-		<link rel="stylesheet"
-		href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-		<!-- Generic page styles -->
-		<link rel="stylesheet" href="../css/style.css">
-		<!-- Custom styles for this template -->
-		<link href="../css/dashboard.css" rel="stylesheet">
-		<!-- Optional theme -->
-		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-		<link rel="stylesheet" href="../css/jquery.fileupload.css">
-		
-		<style type="text/css">
-			.bar {
-				height: 18px;
-				background: green;
-			}
-			.image-list{
-				width: 150px;
-				height: 100px;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span><span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#">情感识别系统</a>
-				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<a href="color.html">Account</a>
-						</li>
-						<li>
-							<a href="#">Settings</a>
-						</li>
-						<li>
-							<a href="#">Help</a>
-						</li>
-					</ul>
-					<form class="navbar-form navbar-right">
-						<input type="text" class="form-control" placeholder="Search...">
-					</form>
-				</div>
+<head>
+<meta charset="UTF-8">
+<title>Image Analytics</title>
+<!-- Bootstrap styles -->
+<link rel="stylesheet"
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<!-- Generic page styles body padding -->
+<link rel="stylesheet" href="../css/style.css">
+
+<!-- Custom styles for this template -->
+<link href="../css/dashboard.css" rel="stylesheet">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+<!-- Plugins styles -->
+<link rel="stylesheet" href="../css/jquery.fileupload.css">
+<link rel="stylesheet" href="../css/anythingzoomer.css">
+<link rel="stylesheet" href="../css/bootstrap-notify.css">
+<!-- Custom Styles -->
+<link href="../css/alert-bangtidy.css" rel="stylesheet">
+
+<!-- My Custom styles -->
+<link rel="stylesheet" href="../css/match.main.css">
+
+<!-- jQuery  And Bootstrap  Script-->
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="../js/vendor/jquery.ui.widget.js"></script>
+<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="../js/jquery.iframe-transport.js"></script>
+
+<!-- The basic File Upload plugin -->
+<script src="../js/jquery.fileupload.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script
+	src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<script src="../js/jquery.anythingzoomer.min.js"></script>
+<script src="../js/bootstrap-notify.js"></script>
+<script src="../js/jquery.sprintf.js"></script>
+
+<!-- Custom Script -->
+<script src="../js/match.main.js"></script>
+<script id="template-thumbnail" type="text/x-tmpl">
+			<li class='thumbnail'>
+			<a class='sidebar-thumbnail-a'>
+			<img class='image-list'  src='{%=o.thumbnailUrl%}' id='{%=o.id%}'/>
+			</a>
+			</li>
+		</script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+	<!-- Notification Div -->
+	<div class='notifications bottom-right'></div>
+	
+	<!-- Navigation Header -->
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span><span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">情感识别系统</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="color.html">Account</a></li>
+					<li><a href="#">Help</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
 			</div>
 		</div>
+	</div>
 
-		<div class="container-fluid">
-			<div class="row">
-				<!-- left sidebar-->
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li >
-							<a href="index.html">Analysis</a>
-						</li>
-						<li class="active">
-							<a href="#">Matching</a>
-						</li>
-					</ul>
-				</div>
-				<!-- right images sidebar -->
-				<div class="col-sm-3 col-sm-offset-9 col-md-2  col-md-offset-10 sidebar">
-					<ul class="nav nav-sidebar" id="image-gallery">
-					</ul>
-				</div>
-				<!-- main frame-->
-				<div class="col-sm-6 col-sm-offset-3 col-md-8 col-md-offset-2 main">
-					<div class="row placeholders">
-						<div class="col-sm-6 col-md-4">
-							<div class="thumbnail">
-								<img id="previewImg" alt="300x200" data-src="holder.js/300x200" style="width: 300px; height: 200px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE5cHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MzAweDIwMDwvdGV4dD48L3N2Zz4=">
-								<div class="caption">
-									<h3>Thumbnail label</h3>
-									<p>
-										Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-									</p>
-									<!-- The fileinput-button span is used to style the file input field as button -->
-
-									<!-- Single button -->
-									<div class="btn-group">
-										<button id="dropButton" option="0" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-											Auto<span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu" role="menu">
-											<li class="dropMenuList" option="0" >
-												<a>Auto</a>
-											</li>
-											<li class="dropMenuList" option="1" >
-												<a>Percentage</a>
-											</li>
-											<li class="dropMenuList" option="2" >
-												<a>Nearest Hue</a>
-											</li>
-											<li class="dropMenuList" option="3" >
-												<a>Light</a>
-											</li>
-										</ul>
-									</div>
-									<span class="btn btn-success fileinput-button"> <i class="glyphicon glyphicon-plus"></i> <span>Select</span> <!-- The file input field used as target for the file upload widget -->
-										<input id="fileupload" type="file" name="files[]" multiple>
-									</span>
-									<br />
-									<!-- The global progress bar -->
-									<div id="progress" class="progress">
-										<div class="bar" style="width: 0%;"></div>
-									</div>
-								</div>
-
-							</div>
+	<!-- Container -->
+	<div class="container-fluid">
+		<div class="row">
+			<!-- left sidebar-->
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar nav-pills">
+					<li><a href="index.html">Analysis</a></li>
+					<li class="active"><a href="#">Matching</a></li>
+				</ul>
+			</div>
+			
+			<!-- right  sidebar -->
+			<div
+				class="col-sm-3 col-sm-offset-9 col-md-2  col-md-offset-10 sidebar">
+				<ul class="nav nav-sidebar bg-primary" id="image-thumbnails"></ul>
+				<button type="button" id="loading-thumbnails-btn"
+					data-loading-text="loading" class="btn btn-primary btn-block">
+					More</button>
+			</div>
+			
+			
+			<!-- main frame-->
+			<div class="col-sm-6 col-sm-offset-3 col-md-8 col-md-offset-2 main">
+				<div class="row placeholders">
+					<div class="page-header">
+						<h1>Source Image</h1>
+					</div>
+					<div class="col-md-10 zoom">
+						<div id='sourceDiv' class="small thumbnail" data_id="-1">
+							<!-- <img src="../tmp/Desert.jpg" /> -->
 						</div>
-						<div class="col-sm-6 col-md-6">
-							<div class="thumbnail">
-								<img id="resultImg" alt="300x200" data-src="holder.js/450x300" style="width: 300; height: 200px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE5cHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MzAweDIwMDwvdGV4dD48L3N2Zz4=" >
-								<div class="caption">
-									<h3>Thumbnail label</h3>
-									<p>
-										<button  type="button" class="btn btn-primary">
-											Save As
-										</button>
-									</p>
-								</div>
-							</div>
+					</div>
+					<div class="col-md-2 ">
+						<div class="btn-group">
+							<button id="dropButton" option="0" type="button"
+								class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+								Auto<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li class="dropMenuList" option="0"><a>Auto</a></li>
+								<li class="dropMenuList" option="1"><a>Percentage</a></li>
+								<li class="dropMenuList" option="2"><a>Nearest Hue</a></li>
+								<li class="dropMenuList" option="3"><a>Light</a></li>
+							</ul>
+						</div>
+						<br /> <br /> <span class="btn btn-success fileinput-button">
+							<i class="glyphicon glyphicon-plus"></i> <span>Select</span> <!-- The file input field used as target for the file upload widget -->
+							<input id="fileupload" type="file" name="files[]" multiple>
+						</span> <br /> <br />
+						<!-- The global progress bar -->
+						<div id="progress" class="progress">
+							<div class="progress-bar progress-bar-success " aria-valuemin="0"
+								aria-valuemax="100"></div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row placeholders">
+					<div class="col-md-10 zoom">
+						<div id='resultDiv' class="small thumbnail" data_id="-1"></div>
+						<div class="col-md-2">
+							<button type="button" class="btn btn-primary">Save As</button>
 						</div>
 					</div>
 				</div>
 			</div>
-			<script
-			src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-			<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-			<script src="../js/vendor/jquery.ui.widget.js"></script>
-			<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
-			<!-- Latest compiled and minified JavaScript -->
-			<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-			<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-			<script src="../js/jquery.iframe-transport.js"></script>
-			<!-- The basic File Upload plugin -->
-			<script src="../js/jquery.fileupload.js"></script>
-			<script src="../js/match.main.js"></script>
-	</body>
+</body>
 </html>

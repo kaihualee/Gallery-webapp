@@ -54,13 +54,15 @@
 				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
 				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
-				<prop key="hibernate.transaction.factory_class">${hibernate.transaction.factory_class}</prop>
-				<!-- <prop key="hibernate.connection.pool_size">${hibernate.connection.pool_size}</prop> 
+				<!-- <prop key="hibernate.transaction.factory_class">${hibernate.transaction.factory_class}</prop> 
+					<prop key="hibernate.connection.pool_size">${hibernate.connection.pool_size}</prop> 
 					<prop key="hibernate.connection.autocommit">${hibernate.connection.autocommit}</prop> 
 					<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop> -->
 			</props>
 		</property>
 	</bean>
+	
+	<!-- Transaction Manager(Default Name) -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
@@ -74,22 +76,18 @@
 	<aop:aspectj-autoproxy />
 
 	<!-- 以AspectJ方式 定义 AOP -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+<!-- 			<tx:method name="get*" read-only="true" /> -->
+<!-- 			<tx:method name="find*" read-only="true" /> -->
+			<tx:method name="*" read-only="false" />
+		</tx:attributes>
+	</tx:advice>
 	<aop:config>
 		<aop:advisor
 			pointcut="execution(public * org.gallery.persist.common.*.*(..)) || execution(public * org.gallery.persist.impl.*.*(..)) || execution(public * org.gallery.service.impl.*.*(..))"
 			advice-ref="txAdvice" />
 	</aop:config>
-	<tx:advice id="txAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="save*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="create*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="delete*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="remove*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
-			<tx:method name="list*" propagation="REQUIRED" read-only="true" />
-			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
-			<tx:method name="*" read-only="true" />
-		</tx:attributes>
-	</tx:advice>
+
 
 </beans>

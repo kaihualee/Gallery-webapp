@@ -1,5 +1,5 @@
 /**
- * @(#)ImageController.java, 2014年3月17日. 
+ * @(#)ImageController.java, 2014骞�鏈�7鏃� 
  * 
  * Copyright 2014 WAWADIMU, Inc. All rights reserved.
  * WAWADIMU PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.ImageDao;
+import org.gallery.persist.utils.PageBean;
 import org.gallery.web.utils.EmotionParser;
 import org.gallery.web.vo.ImageVO;
 import org.imgscalr.Scalr;
@@ -64,31 +66,34 @@ public class ImageController {
 	@Value(value = "#{'${cmd}'}")
 	private String cmd;
 
-	final String thumbnail_suffix = "-thumbnail.png";
-	
-	final String url_prefix = "../action";
+	final String thumbnailFormatName = "jpg";
+
+	final String THUMBNAILNAME_SUFFIX = "-thumbnail." + thumbnailFormatName;
+
+	final int THUMBNAIL_SIZE = 150;
+
+	final String BASE_URL = "../action";
 
 	private final static ObjectMapper mapper = new ObjectMapper();
 
-	@RequestMapping
-	public String index() {
-		log.debug("ImageController home");
-		return "image/index";
-	}
-
 	@RequestMapping(value = "/upload", method = RequestMethod.GET)
 	public @ResponseBody
-	List list() {
+	List list(@RequestParam("pageNum") int pageNum) {
 		log.debug("uploadGet called");
-		List<ImageEntity> images = imageDao.getAll();
+		PageBean pageBean = new PageBean();
+		pageBean.setPageNum(pageNum);
+		List<ImageEntity> images = imageDao.getAll(pageBean);
 		List<ImageVO> list = new ArrayList<>();
 		for (ImageEntity entity : images) {
 			ImageVO imageVO = new ImageVO(entity);
-			imageVO.setUrl(url_prefix+"/picture/" + entity.getId());
-			imageVO.setThumbnailUrl(url_prefix+"/thumbnail/" + entity.getId());
-			imageVO.setDeleteUrl(url_prefix+"/delete/" + entity.getId());
+			imageVO.setId(entity.getId());
+			imageVO.setUrl(BASE_URL + "/picture/" + entity.getId());
+			imageVO.setThumbnailUrl(BASE_URL + "/thumbnail/" + entity.getId());
+			imageVO.setDeleteUrl(BASE_URL + "/delete/" + entity.getId());
 			imageVO.setDeleteType("DELETE");
+
 			list.add(imageVO);
+			log.info(imageVO.toString());
 		}
 		log.debug("Returning: {}", list);
 		return list;
@@ -97,36 +102,41 @@ public class ImageController {
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody
 	Map upload(MultipartHttpServletRequest request, HttpServletResponse response) {
-		log.info("uploadPost called");
+		log.info("UploadPost called...");
 		Iterator<String> itr = request.getFileNames();
 		MultipartFile mpf;
 		List<ImageVO> list = new LinkedList<>();
 
 		while (itr.hasNext()) {
 			mpf = request.getFile(itr.next());
-			log.info("Uploading {}", mpf.getOriginalFilename());
+			String originalFilename = mpf.getOriginalFilename();
+			log.info("Uploading {}", originalFilename);
 
 			String newFilenameBase = UUID.randomUUID().toString();
-			String originalFileExtension = mpf.getOriginalFilename().substring(
-					mpf.getOriginalFilename().lastIndexOf("."));
+			String originalFileExtension = originalFilename
+					.substring(originalFilename.lastIndexOf("."));
 			String newFilename = newFilenameBase + originalFileExtension;
 			String storageDirectory = fileUploadDirectory;
 			String contentType = mpf.getContentType();
 
-			File newFile = new File(storageDirectory + "/" + newFilename);
+			File newFile = new File(storageDirectory + File.separatorChar
+					+ newFilename);
 			try {
 				mpf.transferTo(newFile);
 
 				BufferedImage thumbnail = Scalr.resize(ImageIO.read(newFile),
-						290);
-				String thumbnailFilename = newFilenameBase + thumbnail_suffix;
-				File thumbnailFile = new File(storageDirectory + "/"
-						+ thumbnailFilename);
-				ImageIO.write(thumbnail, "png", thumbnailFile);
+						THUMBNAIL_SIZE);
+				String thumbnailFilename = newFilenameBase
+						+ THUMBNAILNAME_SUFFIX;
+				File thumbnailFile = new File(storageDirectory
+						+ File.separatorChar + thumbnailFilename);
+				ImageIO.write(thumbnail, thumbnailFormatName, thumbnailFile);
 
-				ImageEntity entity = EmotionParser.parse(ImageIO.read(newFile));
-				// ImageEntity entity = new ImageEntity();
-				entity.setName(mpf.getOriginalFilename());
+				log.info("EmotionParser...");
+				// ImageEntity entity =
+				// EmotionParser.parse(ImageIO.read(newFile));
+				ImageEntity entity = new ImageEntity();
+				entity.setName(originalFilename);
 				// entity.setThumbnailFilename(thumbnailFilename);
 				entity.setNewFilename(newFilename);
 				entity.setContentType(contentType);
@@ -134,17 +144,18 @@ public class ImageController {
 				imageDao.save(entity);
 
 				ImageVO imageVO = new ImageVO(entity);
-				imageVO.setUrl(url_prefix+"/picture/" + entity.getId());
-				imageVO.setThumbnailUrl(url_prefix+"/thumbnail/" + entity.getId());
-				imageVO.setDeleteUrl(url_prefix+"/delete/" + entity.getId());
-				imageVO.setEmotionUrl(url_prefix+"/emotion/" + entity.getId());
+				imageVO.setId(entity.getId());
+				imageVO.setUrl(BASE_URL + "/picture/" + entity.getId());
+				imageVO.setThumbnailUrl(BASE_URL + "/thumbnail/"
+						+ entity.getId());
+				imageVO.setDeleteUrl(BASE_URL + "/delete/" + entity.getId());
+				imageVO.setEmotionUrl(BASE_URL + "/emotion/" + entity.getId());
 				imageVO.setDeleteType("DELETE");
 
 				list.add(imageVO);
 
 			} catch (IOException e) {
-				log.error("Could not upload file " + mpf.getOriginalFilename(),
-						e);
+				log.error("Could not upload file " + originalFilename, e);
 			}
 
 		}
@@ -157,7 +168,7 @@ public class ImageController {
 	@RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
 	public void picture(HttpServletResponse response, @PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
-		File imageFile = new File(fileUploadDirectory + "/"
+		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ entity.getNewFilename());
 		response.setContentType(entity.getContentType());
 		response.setContentLength(entity.getSize().intValue());
@@ -174,16 +185,18 @@ public class ImageController {
 		ImageEntity entity = imageDao.get(id);
 		String thumbnailFilename = entity.getNewFilename().substring(0,
 				entity.getNewFilename().lastIndexOf('.'))
-				+ thumbnail_suffix;
-		File imageFile = new File(fileUploadDirectory + "/" + thumbnailFilename);
+				+ THUMBNAILNAME_SUFFIX;
+		File imageFile = new File(fileUploadDirectory + File.separatorChar
+				+ thumbnailFilename);
 
-		response.setContentType("image/png");
+		response.setContentType("image" + File.separatorChar
+				+ thumbnailFormatName);
 		response.setContentLength((int) imageFile.length());
 		try {
 			InputStream is = new FileInputStream(imageFile);
 			IOUtils.copy(is, response.getOutputStream());
 		} catch (IOException e) {
-			log.error("Could not show thumbnail " + id, e);
+			log.error("Could not show thumbnail:" + id, e);
 		}
 	}
 
@@ -191,13 +204,13 @@ public class ImageController {
 	public @ResponseBody
 	List delete(@PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
-		File imageFile = new File(fileUploadDirectory + "/"
+		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ entity.getNewFilename());
 		imageFile.delete();
 		String thumbnailFilename = entity.getNewFilename().substring(0,
 				entity.getNewFilename().lastIndexOf('.'))
-				+ thumbnail_suffix;
-		File thumbnailFile = new File(fileUploadDirectory + "/"
+				+ THUMBNAILNAME_SUFFIX;
+		File thumbnailFile = new File(fileUploadDirectory + File.separatorChar
 				+ thumbnailFilename);
 		thumbnailFile.delete();
 		imageDao.deleteById(entity.getId());
@@ -237,23 +250,31 @@ public class ImageController {
 
 	@RequestMapping(value = "/convert", params = { "id1", "id2" }, method = RequestMethod.GET)
 	@ResponseBody
-	public Map convert(@RequestParam("id1") long src,
-			@RequestParam("id2") long dest) {
+	public Map convert(@RequestParam("id1") long srcId,
+			@RequestParam("id2") long destId) {
 		String srcImagePath = fileUploadDirectory + File.separator
-				+ imageDao.get(src).getNewFilename();
+				+ imageDao.get(srcId).getNewFilename();
 		String destImagePath = fileUploadDirectory + File.separator
-				+ imageDao.get(dest).getNewFilename();
+				+ imageDao.get(destId).getNewFilename();
+		String fileName = imageDao.get(srcId).getNewFilename();
+		String fileFormatName = fileName.substring(
+				fileName.lastIndexOf(".") + 1, fileName.length());
 		String cmdLine = "";
 		try {
 			cmdLine = cmd + " " + srcImagePath + " " + destImagePath;
 			log.info("cmdLine:" + cmdLine);
-			Runtime.getRuntime().exec(cmdLine);
+			java.lang.Process process = Runtime.getRuntime().exec(cmdLine);
+			process.waitFor();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			log.error("conver?id1=" + src + "id2=" + dest, e);
+			log.error("conver?id1=" + srcId + "id2=" + destId, e);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			log.error("exec " + cmdLine + " failed!", e);
+			e.printStackTrace();
 		}
-		Map success = new HashMap<String, String>();
-		success.put("filename", "converted.jpg");
+		Map<String, String> success = new HashMap<String, String>();
+		success.put("filename", "converted." + fileFormatName);
 		return success;
 	}
 

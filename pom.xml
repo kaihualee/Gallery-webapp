@@ -98,7 +98,7 @@
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<webAppConfig>
 						<contextPath>/Gallery-webapp</contextPath>
-						 <defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
+						<defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
 					</webAppConfig>
 				</configuration>
 			</plugin>
@@ -134,6 +134,11 @@
 			<groupId>org.imgscalr</groupId>
 			<artifactId>imgscalr-lib</artifactId>
 			<version>4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.media</groupId>
+			<artifactId>jai_imageio</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 		<!-- Multipart UploadFile -->
 		<dependency>
@@ -259,6 +264,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-oxm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>3.2.4.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

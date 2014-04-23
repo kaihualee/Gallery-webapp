@@ -9,14 +9,23 @@ public class PageBean {
 
     private int maxResults = 10;
 
+    /**
+     * the number of page
+     */
     private int pageNum = 1;
 
     private int pageUp = 0;
 
     private int pageDown = 0;
 
+    /**
+     * total count of beans
+     */
     private int resultsCount = 0;
 
+    /**
+     * total count of pages
+     */
     private int pageCount = 0;
 
     /**

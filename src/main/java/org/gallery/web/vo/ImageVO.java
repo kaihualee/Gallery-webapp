@@ -1,5 +1,5 @@
 /**
- * @(#)ImageVO.java, 2014年3月17日. 
+ * @(#)ImageVO.java, 2014骞�鏈�7鏃� 
  * 
  * Copyright 2014 WAWADIMU, Inc. All rights reserved.
  * WAWADIMU PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -13,131 +13,141 @@ import org.gallery.model.ImageEntity;
  */
 public class ImageVO {
 
-    private String url;
+	private Long id;
+	private String url;
 
-    private String thumbnailUrl;
+	private String thumbnailUrl;
 
-    private String deleteUrl;
-    
-    private String emotionUrl;
+	private String deleteUrl;
 
-    private String deleteType;
+	public Long getId() {
+		return id;
+	}
 
-    private Long size;
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    private String name;
+	private String emotionUrl;
 
-    public ImageVO() {
+	private String deleteType;
 
-    }
+	private Long size;
 
-    public ImageVO(ImageEntity entity) {
-        this.size = entity.getSize();
-        this.name = entity.getName();
-    }
+	private String name;
 
-    /**
-     * @return the emotionUrl
-     */
-    public String getEmotionUrl() {
-        return emotionUrl;
-    }
+	public ImageVO() {
 
-    /**
-     * @param emotionUrl the emotionUrl to set
-     */
-    public void setEmotionUrl(String emotionUrl) {
-        this.emotionUrl = emotionUrl;
-    }
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	public ImageVO(ImageEntity entity) {
+		this.size = entity.getSize();
+		this.name = entity.getName();
+	}
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * @return the emotionUrl
+	 */
+	public String getEmotionUrl() {
+		return emotionUrl;
+	}
 
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
+	/**
+	 * @param emotionUrl
+	 *            the emotionUrl to set
+	 */
+	public void setEmotionUrl(String emotionUrl) {
+		this.emotionUrl = emotionUrl;
+	}
 
-    /**
-     * @param url
-     *            the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the thumbnailUrl
-     */
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param thumbnailUrl
-     *            the thumbnailUrl to set
-     */
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
-    }
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
 
-    /**
-     * @return the deleteUrl
-     */
-    public String getDeleteUrl() {
-        return deleteUrl;
-    }
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    /**
-     * @param deleteUrl
-     *            the deleteUrl to set
-     */
-    public void setDeleteUrl(String deleteUrl) {
-        this.deleteUrl = deleteUrl;
-    }
+	/**
+	 * @return the thumbnailUrl
+	 */
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
 
-    /**
-     * @return the deleteType
-     */
-    public String getDeleteType() {
-        return deleteType;
-    }
+	/**
+	 * @param thumbnailUrl
+	 *            the thumbnailUrl to set
+	 */
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
 
-    /**
-     * @param deleteType
-     *            the deleteType to set
-     */
-    public void setDeleteType(String deleteType) {
-        this.deleteType = deleteType;
-    }
+	/**
+	 * @return the deleteUrl
+	 */
+	public String getDeleteUrl() {
+		return deleteUrl;
+	}
 
-    /**
-     * @return the size
-     */
-    public Long getSize() {
-        return size;
-    }
+	/**
+	 * @param deleteUrl
+	 *            the deleteUrl to set
+	 */
+	public void setDeleteUrl(String deleteUrl) {
+		this.deleteUrl = deleteUrl;
+	}
 
-    /**
-     * @param size
-     *            the size to set
-     */
-    public void setSize(Long size) {
-        this.size = size;
-    }
+	/**
+	 * @return the deleteType
+	 */
+	public String getDeleteType() {
+		return deleteType;
+	}
+
+	/**
+	 * @param deleteType
+	 *            the deleteType to set
+	 */
+	public void setDeleteType(String deleteType) {
+		this.deleteType = deleteType;
+	}
+
+	/**
+	 * @return the size
+	 */
+	public Long getSize() {
+		return size;
+	}
+
+	/**
+	 * @param size
+	 *            the size to set
+	 */
+	public void setSize(Long size) {
+		this.size = size;
+	}
 
 }

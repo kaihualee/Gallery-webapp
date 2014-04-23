@@ -21,6 +21,8 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
      */
     private static final long serialVersionUID = -5865240409295652857L;
 
+   
+    //Emotion fields
     private Blob weights;
 
     private Blob heats;
@@ -35,6 +37,7 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
 
     private float global_awh;
 
+    //Image Field
     private String newFilename;
 
     private String contentType;
@@ -193,7 +196,7 @@ public class ImageEntity extends LogicEntityImpl implements StatusEntity {
 
     @Override
     public String toString() {
-        return "Image{" + "id=" + ", name=" + name + ", newFilename="
+        return "Image{" + "id=" + id+ ", name=" + name + ", newFilename="
             + newFilename + ", contentType=" + contentType + ", size=" + size
             + '}';
     }
