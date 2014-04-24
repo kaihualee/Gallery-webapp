@@ -51,5 +51,11 @@ public class ImageControllerTest {
 		Long id = 12L;
 		//controller.picture(null, id);
 	}
+	
+	@Test
+	public void testDelete(){
+		Long id = 1L;
+		controller.delete(id);
+	}
 
 }

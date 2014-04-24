@@ -26,12 +26,19 @@ $(function() {
 				'application/octet-stream' ]
 	};
 	
+	sizes={
+			"small":0,
+			"medium":1,
+			"big":2
+	};
+	
+	
 	'use strict';
 	// Initialize the jQuery File Upload widget:
 	$('#fileupload').fileupload({
 		// Uncomment the following to send cross-domain cookies:
 		// xhrFields: {withCredentials: true},
-		url : '../action/upload'
+		url : urls.upload[0]
 	});
 
 	// Enable iframe cross-domain access via redirect option:

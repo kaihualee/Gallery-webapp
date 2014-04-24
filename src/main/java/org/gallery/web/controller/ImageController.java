@@ -72,7 +72,6 @@ public class ImageController {
 	@Value(value = "#{'${cmd}'}")
 	private String cmd;
 
-
 	private final static ObjectMapper mapper = new ObjectMapper();
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -172,8 +171,7 @@ public class ImageController {
 				ImageVO imageVO = new ImageVO(entity);
 				imageVO.setId(entity.getId());
 				imageVO.setUrl("/picture/" + entity.getId());
-				imageVO.setThumbnailUrl("/thumbnail/"
-						+ entity.getId());
+				imageVO.setThumbnailUrl("/thumbnail/" + entity.getId());
 				imageVO.setDeleteUrl("/delete/" + entity.getId());
 				imageVO.setEmotionUrl("/emotion/" + entity.getId());
 				imageVO.setDeleteType("DELETE");
@@ -201,7 +199,8 @@ public class ImageController {
 		try {
 			InputStream is = new FileInputStream(imageFile);
 			IOUtils.copy(is, response.getOutputStream());
-			//IOUtils.copy(is,new FileOutputStream("c:\\tmp\\picture-"+thumbnailFilename));
+			// IOUtils.copy(is,new
+			// FileOutputStream("c:\\tmp\\picture-"+thumbnailFilename));
 		} catch (IOException e) {
 			log.error("Could not show picture " + id, e);
 		}
@@ -269,18 +268,24 @@ public class ImageController {
 	public @ResponseBody
 	List delete(@PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
-		File imageFile = new File(fileUploadDirectory + File.separatorChar
-				+ entity.getNewFilename());
-		imageFile.delete();
+		String originalFilename = entity.getName();
+		String newFilenameBase = entity.getNewFilename();
 
-		//Delete original File
-		
-		String thumbnailFilename = entity.getNewFilename().substring(0,
-				entity.getNewFilename().lastIndexOf('.'));
-		File thumbnailFile = new File(fileUploadDirectory + File.separatorChar
-				+ thumbnailFilename);
-		thumbnailFile.delete();
+		// Delete original File
+		File file = new File(fileUploadDirectory + File.separatorChar
+				+ originalFilename);
+		file.delete();
+
+		// Delete thumbnails
+		for (ThumbnailSize thumbnail_Enum : ThumbnailSize.values()) {
+			file = new File(fileUploadDirectory + File.separatorChar
+					+ thumbnail_Enum.getId() + newFilenameBase
+					+ thumbnail_Enum.getFormatName());
+			file.delete();
+		}
+
 		imageDao.deleteById(entity.getId());
+		log.info(entity.toString());
 		List<Map<String, Object>> results = new ArrayList<>();
 		Map<String, Object> success = new HashMap<>();
 		success.put("success", true);
