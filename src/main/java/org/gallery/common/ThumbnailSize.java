@@ -21,7 +21,7 @@ public enum ThumbnailSize {
 
 	public static ThumbnailSize valueOf(int id) {
 		if (id == BIG_SIZE.id) {
-			return SMALL_SIZE;
+			return BIG_SIZE;
 		} else if (id == MEDIUM_SIZE.id) {
 			return MEDIUM_SIZE;
 		} else {

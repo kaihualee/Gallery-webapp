@@ -6,21 +6,32 @@
  */
 package org.gallery.web.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.gallery.model.DataFileEntity;
+import org.gallery.persist.DataFileDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -28,121 +39,126 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 /**
  * @author likaihua
  */
+
 @Controller
-@RequestMapping("/controller")
+@RequestMapping
 public class FileController {
+	private final static Logger log = LoggerFactory
+			.getLogger(FileController.class);
 
-//    LinkedList<FileMeta> files = new LinkedList<FileMeta>();
-//
-//
-//    private final static Logger log = LoggerFactory
-//        .getLogger(FileController.class);
-//
-//
-//    /***************************************************
-//     * URL: /rest/controller/upload upload(): receives files
-//     * 
-//     * @param request
-//     *            : MultipartHttpServletRequest auto passed
-//     * @param response
-//     *            : HttpServletResponse auto passed
-//     * @return LinkedList<FileMeta> as json format
-//     * @throws IOException
-//     ****************************************************/
-//    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-//    public @ResponseBody
-//    LinkedList<FileMeta> upload(MultipartHttpServletRequest request,
-//        HttpServletResponse response) throws IOException {
-//
-//        //1. build an iterator
-//        Iterator<String> itr = request.getFileNames();
-//        MultipartFile mpf = null;
-//
-//        //2. get each file
-//        while (itr.hasNext()) {
-//
-//            //2.1 get next MultipartFile
-//            mpf = request.getFile(itr.next());
-//            System.out.println(mpf.getOriginalFilename() + " uploaded! "
-//                + files.size());
-//
-//            //2.2 if files > 10 remove the first from the list
-//            if (files.size() >= 10)
-//                files.pop();
-//
-//            //2.3 create new fileMeta
-//            fileMeta = new FileMeta();
-//            fileMeta.setFileName(mpf.getOriginalFilename());
-//            fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
-//            fileMeta.setFileType(mpf.getContentType());
-//            fileMeta.setBytes(mpf.getBytes());
-//
-//            //2.5 create new fileData
-//            fileData = new FileData();
-//            fileData.setFileName(mpf.getOriginalFilename());
-//            fileData.setLength((int) mpf.getSize());
-//            fileData.setFileType(mpf.getContentType());
-//            fileData.setInputStream(mpf.getInputStream());
-//            fileData.setKey(UUID.randomUUID().toString().replace("-", ""));
-//
-//            //2.6  save entity
-//            ImageEntity entity = imageManager.save(fileData);
-//
-//            log.info("save image success: id :{}!",
-//                new Object[] { entity.getId() });
-//            log.info("--------Uploading Completed!-------------");
-//        }
-//        // result will be like this
-//        // [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
-//        //2.4 add to files
-//        fileMeta.setKey(fileData.getKey());
-//        files.add(fileMeta);
-//        return files;
-//    }
-//
-//    /***************************************************
-//     * URL: /rest/controller/get/{value} get(): get file as an attachment
-//     * 
-//     * @param response
-//     *            : passed by the server
-//     * @param value
-//     *            : value from the URL
-//     * @return void
-//     ****************************************************/
-//    @RequestMapping(value = "/get/{value}", method = RequestMethod.GET)
-//    public void get(HttpServletResponse response, @PathVariable String value) {
-//        FileMeta getFile = files.get(Integer.parseInt(value));
-//        try {
-//            response.setContentType(getFile.getFileType());
-//            response.setHeader("Content-disposition", "attachment; filename=\""
-//                + getFile.getFileName() + "\"");
-//            FileCopyUtils.copy(getFile.getBytes(), response.getOutputStream());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @RequestMapping(value = "/get-key/{key}", method = RequestMethod.GET)
-//    public void get(HttpServletRequest requet, HttpServletResponse response,
-//        @PathVariable("key") String key) {
-//
-//        FileData fileData = dataFileDao.getDataByKey(key);
-//        if (fileData == null) {
-//            log.info("invalid key :{}" + key);
-//        }
-//
-//        response.setContentType(fileData.getFileType());
-//        response.setHeader("Content-disposition", "attachment; filename=\""
-//            + fileData.getKey() + "\"");
-//        try {
-//            FileCopyUtils.copy(fileData.getInputStream(),
-//                response.getOutputStream());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        log.info("file's key{} has been downloaded.", new Object[] { key });
-//    }
+	@Autowired
+	@Value(value = "#{'${app.filesystem.dir}'}")
+	private String fileUploadDirectory;
 
+	@Autowired
+	private DataFileDao dataFileDao;
+
+	@RequestMapping(value = "/uploadfile", method = RequestMethod.POST)
+	public @ResponseBody
+	Map upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+
+		log.info("uploadfile called...");
+		Iterator<String> itr = request.getFileNames();
+		MultipartFile mpf;
+		List<DataFileEntity> list = new LinkedList<>();
+
+		while (itr.hasNext()) {
+			mpf = request.getFile(itr.next());
+			String originalFilename = mpf.getOriginalFilename();
+			log.info("Uploading {}", originalFilename);
+
+			String key = UUID.randomUUID().toString();
+			String storageDirectory = fileUploadDirectory;
+
+			File file = new File(storageDirectory + File.separatorChar + key);
+			try {
+
+				// Save Images
+				mpf.transferTo(file);
+
+				// Save FileEntity
+				DataFileEntity dataFileEntity = new DataFileEntity();
+				dataFileEntity.setName(mpf.getOriginalFilename());
+				dataFileEntity.setKey(key);
+				dataFileEntity.setSize(mpf.getSize());
+				dataFileEntity.setContentType(mpf.getContentType());
+				dataFileDao.save(dataFileEntity);
+				list.add(dataFileEntity);
+			} catch (IOException e) {
+				log.error("Could not upload file " + originalFilename, e);
+			}
+		}
+		Map<String, Object> files = new HashMap<>();
+		files.put("files", list);
+		return files;
+	}
+
+	/**
+	 * Download file using filename
+	 * 
+	 * @param response
+	 * @param filename
+	 */
+	@RequestMapping(value = "/downloadfilebyname/{name:.+}", params = { "attachment" }, method = RequestMethod.GET)
+	public void downloadfilebyname(HttpServletResponse response,
+			@PathVariable("name") String filename,
+			@RequestParam("attachment") boolean attachment) {
+
+		log.info("downloadfilebyname called...");
+		String realPath = fileUploadDirectory + File.separator + filename;
+		File file = new File(realPath);
+		if (attachment)
+			try {
+				response.setHeader(
+						"Content-Disposition",
+						"attachment; filename="
+								+ java.net.URLEncoder.encode(filename, "UTF-8"));
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				log.error("Could not  encode " + filename, e1);
+			}
+		try {
+			InputStream is = new FileInputStream(file);
+			IOUtils.copy(is, response.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not  download " + filename, e);
+		}
+	}
+
+	@RequestMapping(value = "/downloadfile/{id}", params = { "attachment" }, method = RequestMethod.GET)
+	public void download(HttpServletResponse response,
+			@PathVariable("id") Long id,
+			@RequestParam("attachment") boolean attachment) {
+
+		log.info("downloadfile called...");
+		DataFileEntity entity = dataFileDao.getById(id);
+		if (entity == null) {
+			return;
+		} else {
+			String realPath = fileUploadDirectory + File.separatorChar
+					+ entity.getKey();
+			File file = new File(realPath);
+			response.setContentType(entity.getContentType());
+			response.setContentLength(entity.getSize().intValue());
+			if (attachment)
+				try {
+					response.setHeader(
+							"Content-Disposition",
+							"attachment; filename="
+									+ java.net.URLEncoder.encode(
+											entity.getName(), "UTF-8"));
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					log.error("Could not  encode " + entity.getName(), e1);
+				}
+			try {
+				InputStream is = new FileInputStream(file);
+				IOUtils.copy(is, response.getOutputStream());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				log.error("Could not  download: " + entity.toString(), e);
+			}
+		}
+	}
 }

@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,11 +72,10 @@ public class ImageController {
 	@Value(value = "#{'${cmd}'}")
 	private String cmd;
 
-	final String BASE_URL = "../action";
 
 	private final static ObjectMapper mapper = new ObjectMapper();
 
-	@RequestMapping(value = "/upload", method = RequestMethod.GET)
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public @ResponseBody
 	List list(@RequestParam("pageNum") int pageNum) {
 		log.debug("uploadGet called");
@@ -86,11 +86,10 @@ public class ImageController {
 		for (ImageEntity entity : images) {
 			ImageVO imageVO = new ImageVO(entity);
 			imageVO.setId(entity.getId());
-			imageVO.setUrl(BASE_URL + "/picture/" + entity.getId());
-			imageVO.setThumbnailUrl(BASE_URL + "/thumbnail/" + entity.getId());
-			imageVO.setDeleteUrl(BASE_URL + "/delete/" + entity.getId());
+			imageVO.setUrl("/picture/" + entity.getId());
+			imageVO.setThumbnailUrl("/thumbnail/" + entity.getId());
+			imageVO.setDeleteUrl("/delete/" + entity.getId());
 			imageVO.setDeleteType("DELETE");
-
 			list.add(imageVO);
 			log.info(imageVO.toString());
 		}
@@ -121,6 +120,14 @@ public class ImageController {
 				// mpf.transferTo(newFile);
 				BufferedImage originalImage = ImageIO
 						.read(new ByteArrayInputStream(mpf.getBytes()));
+
+				// Save Original Image
+				String filenameExtension = originalFilename.substring(
+						originalFilename.lastIndexOf(".") + 1,
+						originalFilename.length());
+				ImageIO.write(originalImage, filenameExtension, new File(
+						storageDirectory + File.separatorChar
+								+ originalFilename));
 
 				// Small Thumbnails
 				BufferedImage thumbnail_small = Scalr.resize(originalImage,
@@ -164,15 +171,14 @@ public class ImageController {
 
 				ImageVO imageVO = new ImageVO(entity);
 				imageVO.setId(entity.getId());
-				imageVO.setUrl(BASE_URL + "/picture/" + entity.getId());
-				imageVO.setThumbnailUrl(BASE_URL + "/thumbnail/"
+				imageVO.setUrl("/picture/" + entity.getId());
+				imageVO.setThumbnailUrl("/thumbnail/"
 						+ entity.getId());
-				imageVO.setDeleteUrl(BASE_URL + "/delete/" + entity.getId());
-				imageVO.setEmotionUrl(BASE_URL + "/emotion/" + entity.getId());
+				imageVO.setDeleteUrl("/delete/" + entity.getId());
+				imageVO.setEmotionUrl("/emotion/" + entity.getId());
 				imageVO.setDeleteType("DELETE");
 
 				list.add(imageVO);
-
 			} catch (IOException e) {
 				log.error("Could not upload file " + originalFilename, e);
 			}
@@ -185,40 +191,77 @@ public class ImageController {
 	@RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
 	public void picture(HttpServletResponse response, @PathVariable Long id) {
 		ImageEntity entity = imageDao.get(id);
-		ThumbnailSize THUMBNAL_ENUM = ThumbnailSize.MEDIUM_SIZE;
-		String thumbnailFilename = THUMBNAL_ENUM.getId()
-				+ entity.getNewFilename() + "." + THUMBNAL_ENUM.getFormatName();
+		String thumbnailFilename = entity.getName();
 
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ thumbnailFilename);
 
-		response.setContentType("image/" + THUMBNAL_ENUM.getFormatName());
+		response.setContentType(entity.getContentType());
 		response.setContentLength((int) imageFile.length());
 		try {
 			InputStream is = new FileInputStream(imageFile);
 			IOUtils.copy(is, response.getOutputStream());
+			//IOUtils.copy(is,new FileOutputStream("c:\\tmp\\picture-"+thumbnailFilename));
 		} catch (IOException e) {
 			log.error("Could not show picture " + id, e);
 		}
 	}
 
-	@RequestMapping(value = "/thumbnail/{id}", method = RequestMethod.GET)
-	public void thumbnail(HttpServletResponse response, @PathVariable Long id) {
+	@RequestMapping(value = "/thumbnail/{id}", params = { "size" }, method = RequestMethod.GET)
+	public void thumbnail(HttpServletResponse response, @PathVariable Long id,
+			@RequestParam("size") int size) {
 		ImageEntity entity = imageDao.get(id);
-		ThumbnailSize THUMBNAL_ENUM = ThumbnailSize.SMALL_SIZE;
-		String thumbnailFilename = THUMBNAL_ENUM.getId()
-				+ entity.getNewFilename() + "." + THUMBNAL_ENUM.getFormatName();
+		ThumbnailSize thumbnail_Enum = ThumbnailSize.valueOf(size);
+		log.debug("size: %d", new Object[] { thumbnail_Enum.getSize() });
+		String thumbnailFilename = thumbnail_Enum.getId()
+				+ entity.getNewFilename() + "."
+				+ thumbnail_Enum.getFormatName();
 
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
 				+ thumbnailFilename);
 
-		response.setContentType("image/" + THUMBNAL_ENUM.getFormatName());
+		response.setContentType("image/" + thumbnail_Enum.getFormatName());
 		response.setContentLength((int) imageFile.length());
 		try {
 			InputStream is = new FileInputStream(imageFile);
 			IOUtils.copy(is, response.getOutputStream());
+			// IOUtils.copy(is, new
+			// FileOutputStream("c:\\tmp\\thumbnail-"+thumbnail_Enum.getId()+"."+thumbnail_Enum.getFormatName()));
 		} catch (IOException e) {
 			log.error("Could not show thumbnail:" + id, e);
+		}
+	}
+
+	/**
+	 * Download file using filename
+	 * 
+	 * @param response
+	 * @param filename
+	 */
+	@RequestMapping(value = "/download/{name:.+}", params = { "attachment" }, method = RequestMethod.GET)
+	public void download(HttpServletResponse response,
+			@PathVariable("name") String filename,
+			@RequestParam("attachment") boolean attachment) {
+		String realPath = fileUploadDirectory + File.separator + filename;
+		File imageFile = new File(realPath);
+		response.setContentType("image/png");
+		response.setContentLength((int) imageFile.length());
+		if (attachment)
+			try {
+				response.setHeader(
+						"Content-Disposition",
+						"attachment; filename="
+								+ java.net.URLEncoder.encode(filename, "UTF-8"));
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				log.error("Could not  encode " + filename, e1);
+			}
+		try {
+			InputStream is = new FileInputStream(imageFile);
+			IOUtils.copy(is, response.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not  download " + filename, e);
 		}
 	}
 
@@ -230,6 +273,8 @@ public class ImageController {
 				+ entity.getNewFilename());
 		imageFile.delete();
 
+		//Delete original File
+		
 		String thumbnailFilename = entity.getNewFilename().substring(0,
 				entity.getNewFilename().lastIndexOf('.'));
 		File thumbnailFile = new File(fileUploadDirectory + File.separatorChar
@@ -270,20 +315,26 @@ public class ImageController {
 		return results;
 	}
 
-	@RequestMapping(value = "/convert", params = { "id1", "id2", "option" }, method = RequestMethod.GET)
+	@RequestMapping(value = "/convert", params = { "id1", "id2", "option",
+			"size" }, method = RequestMethod.GET)
 	@ResponseBody
 	public Map convert(@RequestParam("id1") long srcId,
-			@RequestParam("id2") long destId, @RequestParam("option") int option) {
+			@RequestParam("id2") long destId,
+			@RequestParam("option") int option, @RequestParam("size") int size) {
+		ThumbnailSize Thumbnail_Enum = ThumbnailSize.valueOf(size);
+
 		String srcImagePath = fileUploadDirectory + File.separator
-				+ imageDao.get(srcId).getNewFilename();
+				+ Thumbnail_Enum.getId() + imageDao.get(srcId).getNewFilename()
+				+ "." + Thumbnail_Enum.getFormatName();
 		String destImagePath = fileUploadDirectory + File.separator
-				+ imageDao.get(destId).getNewFilename();
-		String fileName = imageDao.get(srcId).getNewFilename();
-		String fileFormatName = fileName.substring(
-				fileName.lastIndexOf(".") + 1, fileName.length());
+				+ Thumbnail_Enum.getId()
+				+ imageDao.get(destId).getNewFilename() + "."
+				+ Thumbnail_Enum.getFormatName();
+
 		String cmdLine = "";
 		try {
-			cmdLine = cmd + " " + srcImagePath + " " + destImagePath;
+			cmdLine = cmd + " " + srcImagePath + " " + destImagePath + " "
+					+ option;
 			log.info("cmdLine:" + cmdLine);
 			java.lang.Process process = Runtime.getRuntime().exec(cmdLine);
 			process.waitFor();
@@ -296,24 +347,8 @@ public class ImageController {
 			e.printStackTrace();
 		}
 		Map<String, String> success = new HashMap<String, String>();
-		success.put("filename", "converted." + fileFormatName);
+		success.put("filename", "converted." + Thumbnail_Enum.getFormatName());
 		return success;
-	}
-
-	@RequestMapping(value = "/download/{name:.+}", method = RequestMethod.GET)
-	public void download(HttpServletResponse response,
-			@PathVariable("name") String name) {
-		String realPath = fileUploadDirectory + File.separator + name;
-		File imageFile = new File(realPath);
-		response.setContentType("image/png");
-		response.setContentLength((int) imageFile.length());
-		try {
-			InputStream is = new FileInputStream(imageFile);
-			IOUtils.copy(is, response.getOutputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.error("Could not  download " + name, e);
-		}
 	}
 
 	public static boolean compressImg(BufferedImage src, File outfile, double d) {

@@ -20,7 +20,9 @@ $(function() {
 	baseUrl = "../action";
 	urls = {
 		"upload" : [ baseUrl + "/upload", 'POST', 'json' ],
-		"thumbnails_list" : [ baseUrl + '/upload?pageNum=%d', 'GET', 'json' ],
+		"uploadfile":[ baseUrl + "/uploadfile", 'POST', 'json' ],
+		"downloadfile":[ baseUrl + "/downloadfile/%d?attachment=%s", 'GET', 'json' ],
+		"thumbnails_list" : [ baseUrl + '/list?pageNum=%d', 'GET', 'json' ],
 		"convert" : [ baseUrl + "/convert?id1=%d&id2=%d&option=%d", 'GET',
 				'json' ],
 		"file" : [ baseUrl + "/download/%s?%s", 'GET',
@@ -46,8 +48,8 @@ $(function() {
 						// Uncomment the following to send cross-domain cookies:
 						// xhrFields: {withCredentials: true},
 						maxNumberOfFiles : 1,
-						url : urls.upload[0],
-						dataType : urls.upload[2],
+						url : urls.uploadfile[0],
+						dataType : urls.uploadfile[2],
 						add : function(e, data) {
 							if (data.files && data.files[0]) {
 								prepareLoading("sourceDiv", true);
@@ -55,7 +57,9 @@ $(function() {
 							}
 						},
 						done : function(e, data) {
-							appendImageTo(data.result.files[0].url, "sourceDiv");
+							var url = $.sprintf(urls.downloadfile[0], data.result.files[0].id,"false");
+							alert(url);
+							appendImageTo(url, "sourceDiv");
 							$('#sourceDiv').attr('data_id',
 									data.result.files[0].id);
 							var message = messages.upload_success;
@@ -100,7 +104,7 @@ function prepareLoading(containerId, empty) {
 		$(container).empty();
 	}
 
-	// add loading icon
+	// add loading icon background
 	if ($(container).hasClass('loading') != true) {
 		$(container).addClass('loading');
 	}
@@ -168,7 +172,7 @@ function getThumbnails(btnId, url) {
 				pageNum++;
 				$.each(data, function(index, img) {
 					var element = tmpl_func(img);
-					//$('#image-thumbnails').append(element);
+					// $('#image-thumbnails').append(element);
 					$(element).appendTo($('#img-thumbnails',$(btn).parent()));
 					$(element).fadeIn("slow");
 					console.log(tmpl_func(img));

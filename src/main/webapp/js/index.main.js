@@ -12,6 +12,20 @@
 /*jslint nomen: true, regexp: true */
 /*global $, window, blueimp */
 $(function() {
+	
+	// Url Mapping Information
+	baseUrl = "../action";
+	urls = {
+		"upload" : [ baseUrl + "/upload", 'POST', 'json' ],
+		"uploadfile":[ baseUrl + "/uploadfile", 'POST', 'json' ],
+		"downloadfile":[ baseUrl + "/downloadfile/%d?attachment=%s", 'GET', 'json' ],
+		"thumbnails_list" : [ baseUrl + '/list?pageNum=%d', 'GET', 'json' ],
+		"convert" : [ baseUrl + "/convert?id1=%d&id2=%d&option=%d", 'GET',
+				'json' ],
+		"file" : [ baseUrl + "/download/%s?%s", 'GET',
+				'application/octet-stream' ]
+	};
+	
 	'use strict';
 	// Initialize the jQuery File Upload widget:
 	$('#fileupload').fileupload({

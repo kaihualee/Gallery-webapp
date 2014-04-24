@@ -23,9 +23,8 @@
 		</property>
 		<property name="key" column="DATAFILE_KEY" length="128" type="string"
 			not-null="true" />
-		<property name="fileType" column="DATAFILE_FILETYPE" length="128"
+		<property name="contentType" column="DATAFILE_CONTENTTYPE" length="128"
 			type="string" not-null="true" />
-		<property name="md5Code" column="DATAFILE_MD5CODE" length="128" type="string" />
-		<property name="size" column="SIZE" type="long" />
+		<property name="size" column="DATAFILE_SIZE" type="long" />
 	</class>
 </hibernate-mapping>
