@@ -156,7 +156,7 @@
                             file.size > options.maxFileSize) ||
                         (options.fileTypes &&
                             !options.fileTypes.test(file.type)) ||
-                        !appendImageTo(
+                        !loadImage(
                             file,
                             function (img) {
                                 if (img.src) {
@@ -201,7 +201,7 @@
                     if (options.thumbnail) {
                         thumbnail = data.exif.get('Thumbnail');
                         if (thumbnail) {
-                            appendImageTo(thumbnail, resolve, options);
+                            loadImage(thumbnail, resolve, options);
                             return dfd.promise();
                         }
                     }

@@ -1,7 +1,7 @@
 $(function() {
 
 	// Debug JavaScript
-	appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
+	lkh_appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
 
 	messages = {
 		// Error
@@ -66,7 +66,7 @@ $(function() {
 						done : function(e, data) {
 							var url = $.sprintf(urls.thumbnail[0],
 									data.result.files[0].id, sizes.medium);
-							appendImageTo(url, "sourceDiv");
+							lkh_appendImageTo(url, "sourceDiv");
 							$('#sourceDiv').attr('data_id',
 									data.result.files[0].id);
 							var message = messages.upload_success;
@@ -117,7 +117,7 @@ function prepareLoading(containerId, empty) {
 	}
 }
 
-function appendImageTo(url, containerId) {
+function lkh_appendImageTo(url, containerId) {
 	var container = "#" + containerId;
 
 	// loading image with jquery effect
@@ -267,7 +267,7 @@ function matchImage(event) {
 					}).show();
 					console.log(urls.convert + ' success');
 					console.log(data);
-					appendImageTo($.sprintf(urls.download[0], data.filename,"false",
+	lkh_appendImageTo($.sprintf(urls.download[0], data.filename,"false",
 							new Date().getTime()), "resultDiv");
 				});
 
