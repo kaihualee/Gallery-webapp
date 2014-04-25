@@ -28,7 +28,6 @@ public class DataFileDaoTest {
     @Before
     public void init() throws FileNotFoundException {}
 
-    @Test
     public void testSave() {
         String expected_filename = "myfilename.jpg";
         String expected_filetype = "image/jpg";

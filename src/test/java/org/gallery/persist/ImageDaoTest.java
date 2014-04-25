@@ -38,8 +38,6 @@ public class ImageDaoTest {
 	final Long expected_size = 2048L;
 	final String expected_newFilename = UUID.randomUUID().toString();
 
-	@Test
-	@Transactional
 	public void testSave() throws UnsupportedEncodingException {
 		ImageEntity entity = new ImageEntity();
 		entity.setName(expected_name);
@@ -61,9 +59,8 @@ public class ImageDaoTest {
 	}
 	
 	
-	@Test
 	public void testDeleteById(){
-		Long id = 13L;
+		Long id = 1L;
 		imageDao.deleteById(id);
 		ImageEntity entity = imageDao.get(id);
 		Assert.assertNotNull(entity);
