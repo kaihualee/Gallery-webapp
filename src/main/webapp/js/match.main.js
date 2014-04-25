@@ -20,13 +20,20 @@ $(function() {
 	baseUrl = "../action";
 	urls = {
 		"upload" : [ baseUrl + "/upload", 'POST', 'json' ],
-		"uploadfile":[ baseUrl + "/uploadfile", 'POST', 'json' ],
-		"downloadfile":[ baseUrl + "/downloadfile/%d?attachment=%s", 'GET', 'json' ],
-		"thumbnails_list" : [ baseUrl + '/list?pageNum=%d', 'GET', 'json' ],
-		"convert" : [ baseUrl + "/convert?id1=%d&id2=%d&option=%d", 'GET',
+		"uploadfile" : [ baseUrl + "/uploadfile", 'POST', 'json' ],
+		"downloadfile" : [ baseUrl + "/downloadfile/%d?attachment=%s", 'GET',
 				'json' ],
-		"file" : [ baseUrl + "/download/%s?%s", 'GET',
-				'application/octet-stream' ]
+		"download" : [ baseUrl + "/download/%s?attachment=%s&%s", 'GET', 'json' ],
+		"thumbnails_list" : [ baseUrl + '/list?pageNum=%d', 'GET', 'json' ],
+		"thumbnail":[ baseUrl + '/thumbnail/%d?size=%d', 'GET', 'json' ],
+		"convert" : [ baseUrl + "/convert?id1=%d&id2=%d&option=%d&size=%d", 'GET',
+				'json' ],
+	};
+	
+	sizes={
+			"small":0,
+			"medium":1,
+			"big":2
 	};
 
 	// Initialize thumbnails sidebar via jQUery
@@ -48,8 +55,8 @@ $(function() {
 						// Uncomment the following to send cross-domain cookies:
 						// xhrFields: {withCredentials: true},
 						maxNumberOfFiles : 1,
-						url : urls.uploadfile[0],
-						dataType : urls.uploadfile[2],
+						url : urls.upload[0],
+						dataType : urls.upload[2],
 						add : function(e, data) {
 							if (data.files && data.files[0]) {
 								prepareLoading("sourceDiv", true);
@@ -57,8 +64,8 @@ $(function() {
 							}
 						},
 						done : function(e, data) {
-							var url = $.sprintf(urls.downloadfile[0], data.result.files[0].id,"false");
-							alert(url);
+							var url = $.sprintf(urls.thumbnail[0],
+									data.result.files[0].id, sizes.medium);
 							appendImageTo(url, "sourceDiv");
 							$('#sourceDiv').attr('data_id',
 									data.result.files[0].id);
@@ -112,7 +119,7 @@ function prepareLoading(containerId, empty) {
 
 function appendImageTo(url, containerId) {
 	var container = "#" + containerId;
-	
+
 	// loading image with jquery effect
 	var img = new Image();
 	$(img).load(function() {
@@ -171,9 +178,10 @@ function getThumbnails(btnId, url) {
 			} else {
 				pageNum++;
 				$.each(data, function(index, img) {
+					img.data_url = $.sprintf(urls.thumbnail[0],img.id, sizes.small);
 					var element = tmpl_func(img);
 					// $('#image-thumbnails').append(element);
-					$(element).appendTo($('#img-thumbnails',$(btn).parent()));
+					$(element).appendTo($('#img-thumbnails', $(btn).parent()));
 					$(element).fadeIn("slow");
 					console.log(tmpl_func(img));
 				});
@@ -228,7 +236,7 @@ function matchImage(event) {
 		console.log(urls.convert);
 		prepareLoading('resultDiv', true);
 		$.ajax({
-			url : $.sprintf(urls.convert[0], sid, tid, option),
+			url : $.sprintf(urls.convert[0], sid, tid, 1,sizes.medium),
 			type : urls.convert[1],
 			dataType : urls.convert[2]
 		}).always(function() {
@@ -259,7 +267,7 @@ function matchImage(event) {
 					}).show();
 					console.log(urls.convert + ' success');
 					console.log(data);
-					appendImageTo($.sprintf(urls.file[0], data.filename,
+					appendImageTo($.sprintf(urls.download[0], data.filename,"false",
 							new Date().getTime()), "resultDiv");
 				});
 

@@ -95,6 +95,29 @@ public class ImageController {
 		log.debug("Returning: {}", list);
 		return list;
 	}
+	
+	@RequestMapping(value = "/upload", method = RequestMethod.GET)
+	public @ResponseBody
+	List upload() {
+		int pageNum = 1;
+		log.debug("uploadGet called");
+		PageBean pageBean = new PageBean();
+		pageBean.setPageNum(pageNum);
+		List<ImageEntity> images = imageDao.getAll(pageBean);
+		List<ImageVO> list = new ArrayList<>();
+		for (ImageEntity entity : images) {
+			ImageVO imageVO = new ImageVO(entity);
+			imageVO.setId(entity.getId());
+			imageVO.setUrl("/picture/" + entity.getId());
+			imageVO.setThumbnailUrl("/thumbnail/" + entity.getId());
+			imageVO.setDeleteUrl("/delete/" + entity.getId());
+			imageVO.setDeleteType("DELETE");
+			list.add(imageVO);
+			log.info(imageVO.toString());
+		}
+		log.debug("Returning: {}", list);
+		return list;
+	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody
@@ -279,7 +302,7 @@ public class ImageController {
 		// Delete thumbnails
 		for (ThumbnailSize thumbnail_Enum : ThumbnailSize.values()) {
 			file = new File(fileUploadDirectory + File.separatorChar
-					+ thumbnail_Enum.getId() + newFilenameBase
+					+ thumbnail_Enum.getId() + newFilenameBase+"."
 					+ thumbnail_Enum.getFormatName());
 			file.delete();
 		}
