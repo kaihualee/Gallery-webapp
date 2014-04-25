@@ -1,7 +1,7 @@
 $(function() {
 
 	// Debug JavaScript
-	lkh_appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
+	//lkh_appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
 
 	messages = {
 		// Error
@@ -142,7 +142,7 @@ function lkh_appendImageTo(url, containerId) {
 		}).show();
 		console.log(url + " loading image failed");
 		// 加载失败时的处理
-	}).attr("src", url);
+	}).attr("src", url).addClass('thumbnail');
 	return this;
 }
 
