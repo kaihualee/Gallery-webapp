@@ -10,8 +10,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
+import org.gallery.common.Status;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.utils.PageBean;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +58,16 @@ public class ImageDaoTest {
 		for (ImageEntity entity : list) {
 			System.out.println(entity.toString());
 		}
+	}
+	
+	
+	@Test
+	public void testDeleteById(){
+		Long id = 13L;
+		imageDao.deleteById(id);
+		ImageEntity entity = imageDao.get(id);
+		Assert.assertNotNull(entity);
+		Assert.assertEquals(entity.getStatus(), Status.Deleted);
+		System.out.println(entity.toString());
 	}
 }

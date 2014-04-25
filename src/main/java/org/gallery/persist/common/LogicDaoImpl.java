@@ -18,7 +18,7 @@ public class LogicDaoImpl<T extends LogicEntityImpl> extends BaseDaoImpl<T>
     public void deleteById(Long id) {
         T entity = get(id);
         entity.setStatus(Status.Deleted);
-
+        saveOrUpdate(entity);
     }
 
     @Override
