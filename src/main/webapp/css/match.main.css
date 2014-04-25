@@ -13,4 +13,7 @@
 .small img {
 	width: 700px;
 }
+li a.thumbnail:hover{
+	background-color: #428bca;
+}
 
