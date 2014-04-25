@@ -1,149 +1,167 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Image Analytics</title>
-<!-- Bootstrap styles -->
-<link rel="stylesheet"
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-<!-- Generic page styles body padding -->
-<link rel="stylesheet" href="../css/style.css">
+	<head>
+		<meta charset="UTF-8">
+		<title>Image Analytics</title>
+		<!-- Bootstrap styles -->
+		<link rel="stylesheet"
+		href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<!-- Generic page styles body padding -->
+		<link rel="stylesheet" href="../css/style.css">
 
-<!-- Custom styles for this template -->
-<link href="../css/dashboard.css" rel="stylesheet">
+		<!-- Custom styles for this template -->
+		<link href="../css/dashboard.css" rel="stylesheet">
 
-<!-- Optional theme -->
-<link rel="stylesheet"
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+		<!-- Optional theme -->
+		<link rel="stylesheet"
+		href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 
-<!-- Plugins styles -->
-<link rel="stylesheet" href="../css/jquery.fileupload.css">
-<link rel="stylesheet" href="../css/anythingzoomer.css">
-<link rel="stylesheet" href="../css/bootstrap-notify.css">
-<!-- Custom Styles -->
-<link href="../css/alert-bangtidy.css" rel="stylesheet">
+		<!-- Plugins styles -->
+		<link rel="stylesheet" href="../css/jquery.fileupload.css">
+		<link rel="stylesheet" href="../css/anythingzoomer.css">
+		<link rel="stylesheet" href="../css/bootstrap-notify.css">
+		<!-- Custom Styles -->
+		<link href="../css/alert-bangtidy.css" rel="stylesheet">
 
-<!-- My Custom styles -->
-<link rel="stylesheet" href="../css/match.main.css">
+		<!--Custom Selector-->
+		<link href="../css/bootstrap-select.min.css" rel="stylesheet">
 
-<!-- jQuery  And Bootstrap  Script-->
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="../js/vendor/jquery.ui.widget.js"></script>
-<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
-<!-- Latest compiled and minified JavaScript -->
-<script
-	src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="../js/jquery.iframe-transport.js"></script>
+		<!-- My Custom styles -->
+		<link rel="stylesheet" href="../css/match.main.css">
 
-<!-- The basic File Upload plugin -->
-<script src="../js/jquery.fileupload.js"></script>
-<!-- The Templates plugin is included to render the upload/download listings -->
-<script
-	src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-<script src="../js/jquery.anythingzoomer.min.js"></script>
-<script src="../js/bootstrap-notify.js"></script>
-<script src="../js/jquery.sprintf.js"></script>
+		<!-- jQuery  And Bootstrap  Script-->
+		<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+		<script src="../js/vendor/jquery.ui.widget.js"></script>
+		<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+		<!-- Latest compiled and minified JavaScript -->
+		<script
+		src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+		<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+		<script src="../js/jquery.iframe-transport.js"></script>
 
-<!-- Custom Script -->
-<script src="../js/match.main.js"></script>
-<script id="template-thumbnail" type="text/x-tmpl">
+		<!-- The basic File Upload plugin -->
+		<script src="../js/jquery.fileupload.js"></script>
+		<!-- The Templates plugin is included to render the upload/download listings -->
+		<script
+		src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+		<script src="../js/jquery.anythingzoomer.min.js"></script>
+		<script src="../js/bootstrap-notify.js"></script>
+		<script src="../js/bootstrap-select.min.js"></script>
+		<script src="../js/jquery.sprintf.js"></script>
+
+		<!-- Custom Script -->
+		<script src="../js/match.main.js"></script>
+		<script id="template-thumbnail" type="text/x-tmpl">
 			<li>
 			<a class="thumbnail" href="#resultDiv">
 			<img class='thumbnail-img'  src='{%=o.data_url%}' id='{%=o.id%}'/>
 			</a>
 			</li>
 		</script>
-<style type="text/css">
-</style>
-</head>
-<body>
-	<!-- Notification Div -->
-	<div class='notifications bottom-right bangTidy'></div>
+		<style type="text/css">
+		</style>
+	</head>
+	<body>
+		<!-- Notification Div -->
+		<div class='notifications bottom-right bangTidy'></div>
 
-	<!-- Navigation Header -->
-	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse"
+		<!-- Navigation Header -->
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
 					data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span><span
+						<span class="sr-only">Toggle navigation</span><span
 						class="icon-bar"></span><span class="icon-bar"></span><span
 						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">情感识别系统</a>
-			</div>
-			<div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav nav-pills">
-					<li><a href="index.html">Analysis</a></li>
-					<li class="active"><a href="#">Matching</a></li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="color.html">Account</a></li>
-					<li><a href="#">Help</a></li>
-				</ul>
-				<form class="navbar-form navbar-right">
-					<input type="text" class="form-control" placeholder="Search...">
-					<button type="submit" class="btn btn-primary">搜索</button>
-					<span class="btn btn-success fileinput-button"> <i
-						class="glyphicon glyphicon-plus"></i> <span>Select</span> <!-- The file input field used as target for the file upload widget -->
-						<input id="fileupload" type="file" name="files[]" multiple>
-					</span>
+					</button>
+					<a class="navbar-brand" href="#">情感识别系统</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav nav-pills">
+						<li>
+							<a href="index.html">Analysis</a>
+						</li>
+						<li class="active">
+							<a href="#">Matching</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="color.html">Account</a>
+						</li>
+						<li>
+							<a href="#">Help</a>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-right">
+						<input type="text" class="form-control" placeholder="Search...">
+						<button type="submit" class="btn btn-primary">
+							搜索
+						</button>
+						<span class="btn btn-success fileinput-button"> <i
+							class="glyphicon glyphicon-plus"></i> <span>Select</span> <!-- The file input field used as target for the file upload widget -->
+							<input id="fileupload" type="file" name="files[]">
+						</span>
 
-				</form>
+					</form>
 
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- sidebar -->
-	<div class=" navbar-inverse sidebar  pull-left">
-		<ul class="" id="img-thumbnails" class="list-unstyled"></ul>
-		<button type="button" id="loading-thumbnails-btn"
+		<!-- sidebar -->
+		<div class=" navbar-inverse sidebar  pull-left">
+			<ul class="" id="img-thumbnails" class="list-unstyled"></ul>
+			<button type="button" id="loading-thumbnails-btn"
 			data-loading-text="loading" class="btn btn-primary btn-block">
-			More</button>
-		<br />
-	</div>
+				More
+			</button>
+			<br />
+		</div>
 
-	<!-- Container -->
-	<div class="container-fluid">
-		<div class="row">
-			<!-- main frame-->
-			<div class="main">
-				<div class="row placeholders">
-					<div class="page-header">
-						<h1>结果图片</h1>
+		<!-- Container -->
+		<div class="container-fluid">
+			<div class="row">
+				<!-- main frame-->
+				<div class="main">
+					<div class="row placeholders">
+						<div class="page-header">
+							<h1>结果图片</h1>
+						</div>
+						<div id="resultDiv" data_id="-1"></div>
 					</div>
-					<div id="resultDiv" data_id="-1"></div>
-				</div>
-				<div class="row placeholders">
-					<div class="page-header">
-						<h1>原始图片</h1>
-						<!-- The global progress bar -->
-						<div id="progress" class="progress progress-striped">
-							<div id="img-progress-bar"
+					<div class="row placeholders">
+						<div class="page-header">
+							<h1>原始图片</h1>
+							<!-- The global progress bar -->
+							<div id="progress" class="progress progress-striped">
+								<div id="img-progress-bar"
 								class="progress-bar progress-bar-success " aria-valuemin="0"
 								aria-valuemax="100"></div>
+							</div>
+							<form class="form-horizontal" role="form">
+								<div class="form-group">
+									<select class="selectpicker show-menu-arrow show-tick form-control"  data-style="btn-primary" data-width="auto">
+										<option data-subtext="LKH">Auto</option>
+										<option data-divider="true"></option>
+										<option disabled="disabled" data-subtext="LKH">Percentage</option>
+										<option disabled="disabled" data-subtext="LKH">Nearest Hue</option>
+										<option disabled="disabled" data-subtext="Heinz">Light</option>
+									</select>
+									<select class="selectpicker show-menu-arrow show-tick form-control"  data-style="btn-primary" data-width="auto">
+										<option data-subtext="LKH">small</option>
+										<option  data-subtext="LKH">medium</option>
+										<option data-subtext="Heinz">large</option>
+									</select>
+								</div>
+							</form>
 						</div>
-						<div class="btn-group">
-							<button id="dropButton" option="0" type="button"
-								class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-								Auto<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu" role="menu">
-								<li class="dropMenuList" option="0"><a>Auto</a></li>
-								<li class="dropMenuList" option="1"><a>Percentage</a></li>
-								<li class="dropMenuList" option="2"><a>Nearest Hue</a></li>
-								<li class="dropMenuList" option="3"><a>Light</a></li>
-							</ul>
-						</div>
-
+						<div id="sourceDiv" data_id="-1"></div>
 					</div>
-					<div id="sourceDiv" data_id="-1"></div>
-				</div>
 
-			</div>
-</body>
+				</div>
+	</body>
 </html>

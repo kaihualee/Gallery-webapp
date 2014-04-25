@@ -41,12 +41,7 @@ $(function() {
 			getThumbnails('loading-thumbnails-btn', urls.thumbnails_list))
 			.click();
 
-	// Call the dropdowns via jQuery:
-	$('.dropdown-toggle').dropdown();
-	$('.dropMenuList').click(function() {
-		$('#dropButton').html($(this).text() + '<span class="caret"></span>');
-		$('#dropButton').attr('option', $(this).attr('option'));
-	});
+ 	$('.selectpicker').selectpicker();
 
 	// Initialize the jQuery File Upload widget:
 	$('#fileupload')
