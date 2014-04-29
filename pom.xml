@@ -123,12 +123,20 @@
 				<version>2.4</version>
 				<configuration>
 					<warSourceExcludes>data/**</warSourceExcludes>
+					<warSourceExcludes>tmp/**</warSourceExcludes>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.nativelibs4java</groupId>
+			<artifactId>bridj</artifactId>
+			<version>0.6.2</version>
+		</dependency>
+
+
 		<!-- Image scalr -->
 		<dependency>
 			<groupId>org.imgscalr</groupId>

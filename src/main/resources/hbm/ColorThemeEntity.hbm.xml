@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.gallery.model.ColorThemeEntity" table="COLORTHEME"
+		lazy="true">
+		<id name="id">
+			<column name="COLORTHEME_ID" />
+			<generator class="native" />
+		</id>
+		<property name="createDate" column="COLORTHEME_CREATEDATE"
+			not-null="true" />
+		<property name="modifyTime" column="COLORTHEME_MODIFYTIME"
+			not-null="true" />
+
+		<property name="colorNum" column="COLOR_NUM"  />
+		<property name="rgbs" column="RGBS" type="java.sql.Blob"
+			not-null="true" />
+		<property name="percents" column="PERCENTS" type="java.sql.Blob"
+			not-null="true" />
+	</class>
+</hibernate-mapping>
