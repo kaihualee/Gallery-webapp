@@ -1,7 +1,7 @@
 package org.gallery.common;
 
 /**
- * 包含状态,名称的实体
+ * 包含status,name
  * 
  * @author likaihua
  * 

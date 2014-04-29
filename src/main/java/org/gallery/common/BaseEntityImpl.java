@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * 包含id,创建时间，修改时间
+ * 包含id,createTime，modifyTime
  * @author likaihua
  */
 public abstract class BaseEntityImpl implements BaseEntity {
