@@ -133,7 +133,8 @@ public class ImageController {
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody
-	Map upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+	Map upload(MultipartHttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		log.info("UploadPost called...");
 		Iterator<String> itr = request.getFileNames();
 		MultipartFile mpf;
@@ -148,12 +149,12 @@ public class ImageController {
 			String storageDirectory = fileUploadDirectory;
 			String contentType = mpf.getContentType();
 			String newFilename = newFilenameBase;
-
+			InputStream in = null;
 			try {
 				// Save Images
 				// mpf.transferTo(newFile);
-				BufferedImage originalImage = ImageIO
-						.read(new ByteArrayInputStream(mpf.getBytes()));
+				in = new ByteArrayInputStream(mpf.getBytes());
+				BufferedImage originalImage = ImageIO.read(in);
 
 				// Save Original Image
 				String filenameExtension = originalFilename.substring(
@@ -214,6 +215,8 @@ public class ImageController {
 				list.add(imageVO);
 			} catch (IOException e) {
 				log.error("Could not upload file " + originalFilename, e);
+			} finally {
+				in.close();
 			}
 		}
 		Map<String, Object> files = new HashMap<>();
@@ -372,21 +375,11 @@ public class ImageController {
 				+ imageDao.get(destId).getNewFilename() + "."
 				+ thumbnail_Enum.getFormatName();
 
-		String cmdLine = "";
-		try {
-			cmdLine = cmd + " " + srcImagePath + " " + destImagePath + " "
-					+ option;
-			log.info("cmdLine:" + cmdLine);
-			java.lang.Process process = Runtime.getRuntime().exec(cmdLine);
-			process.waitFor();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.error("conver?id1=" + srcId + "id2=" + destId, e);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			log.error("exec " + cmdLine + " failed!", e);
-			e.printStackTrace();
-		}
+		Pointer<Byte> srcImageName = pointerToCString(srcImagePath);
+		Pointer<Byte> destImageName = pointerToCString(destImagePath);
+		ImageConvertDllLibrary.convertImage2(srcImageName, destImageName,
+				option);
+
 		Map<String, String> success = new HashMap<String, String>();
 		success.put("filename", "converted." + thumbnail_Enum.getFormatName());
 		return success;
