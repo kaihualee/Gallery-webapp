@@ -34,7 +34,7 @@ import com.gallery.nativemethod.ImageConvertDllLibrary;
  */
 public class ImageConvertTest {
 
-
+	private final static ObjectMapper mapper = new ObjectMapper();
 	@Before
 	public void tearUp() {
 		System.out.println(System.getProperty("java.library.path"));
@@ -85,7 +85,6 @@ public class ImageConvertTest {
 
 		// Read Image
 		System.out.println(file.getCanonicalPath());
-		System.out.println(file.getCanonicalPath());
 		Pointer<Byte> srcImageName = pointerToCString(file.getCanonicalPath());
 		System.out.println("Read Image:" + srcImageName.toString());
 		// Memory allocated from Java using Pointer.allocateXXX and
@@ -106,6 +105,7 @@ public class ImageConvertTest {
 		ColorThemeEntity entity = new ColorThemeEntity(colorNum, r, g, b,
 				percent);
 		ColorThemeVO result = new ColorThemeVO(entity);
+		System.out.println(mapper.writeValueAsString(result));
 		System.out.println("Result:" + result.toString());
 	}
 

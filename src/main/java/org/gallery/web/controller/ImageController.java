@@ -6,6 +6,10 @@
  */
 package org.gallery.web.controller;
 
+import static org.bridj.Pointer.allocateDoubles;
+import static org.bridj.Pointer.pointerToBytes;
+import static org.bridj.Pointer.pointerToCString;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.ByteArrayInputStream;
@@ -15,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +37,16 @@ import javax.imageio.ImageWriter;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.bridj.Pointer;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.gallery.common.ThumbnailSize;
+import org.gallery.model.ColorThemeEntity;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.ImageDao;
 import org.gallery.persist.utils.PageBean;
+import org.gallery.web.vo.ColorThemeVO;
 import org.gallery.web.vo.ImageVO;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
@@ -51,6 +61,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.gallery.nativemethod.ImageConvertDllLibrary;
 
 /**
  * @author likaihua
@@ -95,7 +107,7 @@ public class ImageController {
 		log.debug("Returning: {}", list);
 		return list;
 	}
-	
+
 	@RequestMapping(value = "/upload", method = RequestMethod.GET)
 	public @ResponseBody
 	List upload() {
@@ -302,7 +314,7 @@ public class ImageController {
 		// Delete thumbnails
 		for (ThumbnailSize thumbnail_Enum : ThumbnailSize.values()) {
 			file = new File(fileUploadDirectory + File.separatorChar
-					+ thumbnail_Enum.getId() + newFilenameBase+"."
+					+ thumbnail_Enum.getId() + newFilenameBase + "."
 					+ thumbnail_Enum.getFormatName());
 			file.delete();
 		}
@@ -349,15 +361,16 @@ public class ImageController {
 	public Map convert(@RequestParam("id1") long srcId,
 			@RequestParam("id2") long destId,
 			@RequestParam("option") int option, @RequestParam("size") int size) {
-		ThumbnailSize Thumbnail_Enum = ThumbnailSize.valueOf(size);
+		ThumbnailSize thumbnail_Enum = ThumbnailSize.valueOf(size);
 
 		String srcImagePath = fileUploadDirectory + File.separator
-				+ Thumbnail_Enum.getId() + imageDao.get(srcId).getNewFilename()
-				+ "." + Thumbnail_Enum.getFormatName();
+				+ thumbnail_Enum.getId()
+				+ imageDao.getById(srcId).getNewFilename() + "."
+				+ thumbnail_Enum.getFormatName();
 		String destImagePath = fileUploadDirectory + File.separator
-				+ Thumbnail_Enum.getId()
+				+ thumbnail_Enum.getId()
 				+ imageDao.get(destId).getNewFilename() + "."
-				+ Thumbnail_Enum.getFormatName();
+				+ thumbnail_Enum.getFormatName();
 
 		String cmdLine = "";
 		try {
@@ -375,8 +388,42 @@ public class ImageController {
 			e.printStackTrace();
 		}
 		Map<String, String> success = new HashMap<String, String>();
-		success.put("filename", "converted." + Thumbnail_Enum.getFormatName());
+		success.put("filename", "converted." + thumbnail_Enum.getFormatName());
 		return success;
+	}
+
+	@RequestMapping(value = "/colortheme/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public ColorThemeVO colorTheme(@PathVariable("id") Long id)
+			throws JsonParseException, JsonMappingException, IOException,
+			SQLException {
+		ImageEntity entity = imageDao.getById(id);
+		ThumbnailSize thumbnail_Enum = ThumbnailSize.SMALL_SIZE;
+		String srcImagePath = fileUploadDirectory + File.separator
+				+ thumbnail_Enum.getId() + entity.getNewFilename() + "."
+				+ thumbnail_Enum.getFormatName();
+
+		Pointer<Byte> srcImageName = pointerToCString(srcImagePath);
+		log.debug("Read Image:" + srcImagePath.toString());
+		// Memory allocated from Java using Pointer.allocateXXX and
+		// Pointer.pointerToXXX methods has known valid bounds. Pointers that
+		// wrap direct NIO buffers also have known valid bounds that they take
+		// from the buffer.
+		int colorNum = ImageConvertDllLibrary.getColorNum(srcImageName);
+		ByteBuffer rBuf = ByteBuffer.allocateDirect(colorNum);
+		ByteBuffer gBuf = ByteBuffer.allocateDirect(colorNum);
+		ByteBuffer bBuf = ByteBuffer.allocateDirect(colorNum);
+		Pointer<Byte> r = pointerToBytes(rBuf);
+		Pointer<Byte> g = pointerToBytes(gBuf);
+		Pointer<Byte> b = pointerToBytes(bBuf);
+		Pointer<Double> percent = allocateDoubles(colorNum);
+		ImageConvertDllLibrary.getColorTheme(srcImageName, r, g, b, percent);
+
+		// Serialize and Deserialize
+		ColorThemeEntity colorThemeEntity = new ColorThemeEntity(colorNum, r,
+				g, b, percent);
+		ColorThemeVO result = new ColorThemeVO(colorThemeEntity);
+		return result;
 	}
 
 	public static boolean compressImg(BufferedImage src, File outfile, double d) {
