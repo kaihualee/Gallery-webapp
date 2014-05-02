@@ -60,10 +60,10 @@
 			<resource>
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*test.*</exclude>
-					<exclude>**/*Test.*</exclude>
-				</excludes>
+<!-- 				<excludes> -->
+<!-- 					<exclude>**/*test.*</exclude> -->
+<!-- 					<exclude>**/*Test.*</exclude> -->
+<!-- 				</excludes> -->
 			</resource>
 		</resources>
 		<plugins>

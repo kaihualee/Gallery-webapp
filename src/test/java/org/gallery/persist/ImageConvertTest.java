@@ -15,8 +15,6 @@ import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialException;
 
-import junit.framework.Assert;
-
 import org.bridj.Pointer;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -35,16 +33,19 @@ import com.gallery.nativemethod.ImageConvertDllLibrary;
 public class ImageConvertTest {
 
 	private final static ObjectMapper mapper = new ObjectMapper();
+
+	final String sourceFileName = "img-test/source.jpg";
+	final String destFileName = "img-test/match.jpg";
+
 	@Before
 	public void tearUp() {
 		System.out.println(System.getProperty("java.library.path"));
-		System.out.println("------------------------------");
+		System.out.println("-----------------------------------------------");
 	}
 
 	@Test
 	public void testConvertImage() throws IOException {
-		String sourceFileName = "img/source.jpg";
-		String destFileName = "img/match.jpg";
+
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL url = loader.getResource(sourceFileName);
 		File srcFile = new File(url.getFile());
@@ -55,38 +56,39 @@ public class ImageConvertTest {
 				.getCanonicalPath());
 		Pointer<Byte> destImageName = pointerToCString(destFile
 				.getCanonicalPath());
-		String outFileName = srcFile.getParentFile().getPath() + "\\out.jpg";
+		String resultname = "out.jpg";
+		String outFileName = srcFile.getParentFile().getPath()
+				+ File.separatorChar + resultname;
 		Pointer<Byte> outImageName = pointerToCString(outFileName);
-		ImageConvertDllLibrary.convertImage3(srcImageName, destImageName, 1,
-				outImageName);
+		int option = 1;
+		ImageConvertDllLibrary.convertImage3(srcImageName, destImageName,
+				option, outImageName);
+		System.out.println("Save Image: " + outFileName);
 	}
 
 	@Test
 	public void testGetColorNum() throws IOException {
-		String sourceFileName = "img/source.jpg";
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL url = loader.getResource(sourceFileName);
 		File srcFile = new File(url.getFile());
 
 		Pointer<Byte> srcImageName = pointerToCString(srcFile
 				.getCanonicalPath());
-		System.out.println("Read Image:" + srcImageName.toString());
+		System.out.println("Read Image:" + srcFile.getCanonicalPath());
 		int colorNum = ImageConvertDllLibrary.getColorNum(srcImageName);
-		System.out.println(colorNum);
+		System.out.println("ColorNum: " + colorNum);
 	}
 
 	@Test
 	public void testGetColorTheme() throws JsonGenerationException,
 			JsonMappingException, IOException, SerialException, SQLException {
-		String sourceFileName = "img/source.jpg";
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL url = loader.getResource(sourceFileName);
 		File file = new File(url.getFile());
 
 		// Read Image
-		System.out.println(file.getCanonicalPath());
+		System.out.println("Read Image:" + file.getCanonicalPath());
 		Pointer<Byte> srcImageName = pointerToCString(file.getCanonicalPath());
-		System.out.println("Read Image:" + srcImageName.toString());
 		// Memory allocated from Java using Pointer.allocateXXX and
 		// Pointer.pointerToXXX methods has known valid bounds. Pointers that
 		// wrap direct NIO buffers also have known valid bounds that they take
@@ -106,7 +108,8 @@ public class ImageConvertTest {
 				percent);
 		ColorThemeVO result = new ColorThemeVO(entity);
 		System.out.println(mapper.writeValueAsString(result));
-		System.out.println("Result:" + result.toString());
+		System.out.println(entity.toString());
+		System.out.println(result.toString());
 	}
 
 	@Test

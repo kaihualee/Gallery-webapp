@@ -6,14 +6,22 @@
  */
 package org.gallery.persist;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.UUID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.gallery.common.Status;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.utils.PageBean;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,28 +35,43 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext-test.xml" })
 public class ImageDaoTest {
 
 	@Autowired
 	private ImageDao imageDao;
 
-	String expected_name = "勉励";
-	final String expected_contentType = "image/png";
-	final Long expected_size = 2048L;
-	final String expected_newFilename = UUID.randomUUID().toString();
+	final String jsonfilename = "data-test/imageEntity.json";
+	private File file = null;
 
-	public void testSave() throws UnsupportedEncodingException {
-		ImageEntity entity = new ImageEntity();
-		entity.setName(expected_name);
-		entity.setContentType(expected_contentType);
-		entity.setSize(expected_size);
-		entity.setNewFilename(expected_newFilename);
-		imageDao.save(entity);
+	@Before
+	public void tearUp() {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		URL url = loader.getResource(jsonfilename);
+		file = new File(url.getFile());
+	}
+
+	@Test
+	public void testJson() throws JsonParseException, JsonMappingException,
+			IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ImageEntity entity = mapper.readValue(file, ImageEntity.class);
 		System.out.println(entity.toString());
 	}
 
 	@Test
+	@Transactional
+	public void testSave() throws JsonParseException, JsonMappingException,
+			IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ImageEntity entity = mapper.readValue(file, ImageEntity.class);
+		imageDao.save(entity);
+		assertNotNull(entity.getId());
+		System.out.println(entity.toString());
+	}
+
+	@Test
+	@Transactional
 	public void testGetPageBean() {
 		PageBean pageBean = new PageBean();
 		pageBean.setPageNum(1);
@@ -57,14 +80,25 @@ public class ImageDaoTest {
 			System.out.println(entity.toString());
 		}
 	}
-	
-	
-	public void testDeleteById(){
-		Long id = 1L;
+
+	@Test
+	@Transactional
+	public void testDeleteById() throws JsonParseException,
+			JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ImageEntity entity = mapper.readValue(file, ImageEntity.class);
+		imageDao.save(entity);
+		assertNotNull(entity.getId());
+
+		Long id = entity.getId();
 		imageDao.deleteById(id);
-		ImageEntity entity = imageDao.get(id);
-		Assert.assertNotNull(entity);
-		Assert.assertEquals(entity.getStatus(), Status.Deleted);
-		System.out.println(entity.toString());
+		ImageEntity result = imageDao.getById(id);
+		assertNull(result);
+		result = imageDao.get(id);
+		assertNotNull(result);
+		assertNotNull(result.getId());
+		assertEquals(id, result.getId());
+		assertEquals(Status.Deleted, result.getStatus());
+		System.out.println(result.toString());
 	}
 }
