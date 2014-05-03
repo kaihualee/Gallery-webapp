@@ -226,7 +226,7 @@ public class ImageController {
 
 	@RequestMapping(value = "/picture/{id}", method = RequestMethod.GET)
 	public void picture(HttpServletResponse response, @PathVariable Long id) {
-		ImageEntity entity = imageDao.get(id);
+		ImageEntity entity = imageDao.getById(id);
 		String thumbnailFilename = entity.getName();
 
 		File imageFile = new File(fileUploadDirectory + File.separatorChar
@@ -247,7 +247,7 @@ public class ImageController {
 	@RequestMapping(value = "/thumbnail/{id}", params = { "size" }, method = RequestMethod.GET)
 	public void thumbnail(HttpServletResponse response, @PathVariable Long id,
 			@RequestParam("size") int size) {
-		ImageEntity entity = imageDao.get(id);
+		ImageEntity entity = imageDao.getById(id);
 		ThumbnailSize thumbnail_Enum = ThumbnailSize.valueOf(size);
 		log.debug("size: %d", new Object[] { thumbnail_Enum.getSize() });
 		String thumbnailFilename = thumbnail_Enum.getId()
@@ -305,7 +305,7 @@ public class ImageController {
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody
 	List delete(@PathVariable Long id) {
-		ImageEntity entity = imageDao.get(id);
+		ImageEntity entity = imageDao.getById(id);
 		String originalFilename = entity.getName();
 		String newFilenameBase = entity.getNewFilename();
 
@@ -323,7 +323,7 @@ public class ImageController {
 		}
 
 		imageDao.deleteById(entity.getId());
-		log.info(entity.toString());
+		log.debug(entity.toString());
 		List<Map<String, Object>> results = new ArrayList<>();
 		Map<String, Object> success = new HashMap<>();
 		success.put("success", true);
@@ -334,7 +334,7 @@ public class ImageController {
 	@RequestMapping(value = "/emotion/{id}", method = RequestMethod.GET)
 	public @ResponseBody
 	Map emotion(@PathVariable Long id) {
-		ImageEntity entity = imageDao.get(id);
+		ImageEntity entity = imageDao.getById(id);
 
 		Map<String, Object> results = new HashMap<>();
 		float[] heats = null;
@@ -372,7 +372,7 @@ public class ImageController {
 				+ thumbnail_Enum.getFormatName();
 		String destImagePath = fileUploadDirectory + File.separator
 				+ thumbnail_Enum.getId()
-				+ imageDao.get(destId).getNewFilename() + "."
+				+ imageDao.getById(destId).getNewFilename() + "."
 				+ thumbnail_Enum.getFormatName();
 
 		Pointer<Byte> srcImageName = pointerToCString(srcImagePath);
