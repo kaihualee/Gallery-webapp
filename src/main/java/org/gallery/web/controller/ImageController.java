@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,17 +75,14 @@ public class ImageController {
 			.getLogger(ImageController.class);
 
 	@Autowired
-	private ImageDao imageDao;
+	protected ImageDao imageDao;
 
 	@Autowired
 	@Value(value = "#{'${app.filesystem.dir}'}")
-	private String fileUploadDirectory;
+	protected String fileUploadDirectory;
 
-	@Autowired
-	@Value(value = "#{'${cmd}'}")
-	private String cmd;
 
-	private final static ObjectMapper mapper = new ObjectMapper();
+	protected final static ObjectMapper mapper = new ObjectMapper();
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public @ResponseBody
@@ -143,11 +141,17 @@ public class ImageController {
 		while (itr.hasNext()) {
 			mpf = request.getFile(itr.next());
 			String originalFilename = mpf.getOriginalFilename();
+			if(originalFilename == null || StringUtils.isEmpty(originalFilename)){
+				originalFilename = UUID.randomUUID().toString()+".jpg";
+			}
 			log.info("Uploading {}", originalFilename);
 
 			String newFilenameBase = "-" + UUID.randomUUID().toString();
 			String storageDirectory = fileUploadDirectory;
 			String contentType = mpf.getContentType();
+			if(contentType == null || StringUtils.isEmpty(contentType)){
+				contentType = "image/jpeg";
+			}
 			String newFilename = newFilenameBase;
 			InputStream in = null;
 			try {

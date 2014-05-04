@@ -1,7 +1,7 @@
 package org.gallery.web;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,15 +14,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.easymock.EasyMock;
+import org.codehaus.jackson.type.TypeReference;
 import org.gallery.common.ThumbnailSize;
+import org.gallery.persist.ImageDao;
 import org.gallery.web.controller.ImageController;
 import org.gallery.web.vo.ImageVO;
-import org.hibernate.sql.Delete;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +44,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -55,65 +60,48 @@ public class ImageControllerTest {
 	private ImageController controller;
 
 	final String filename = "img-test/upload.jpg";
+	final String sourcefilename = "img-test/source.jpg";
+	final String matchfilename = "img-test/match.jpg";
 
-	final String outfilename = "thumbnails";
+	final String propfilename = "data-test/imagecontroller-test.properties";
+	private Properties prop = new Properties();
 
 	final ObjectMapper mapper = new ObjectMapper();
-	
+
+	private ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
 	@Before
-	public void setup() {
+	public void setup() throws IOException {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
 				.alwaysExpect(status().isOk())
 				.addFilters(new CharacterEncodingFilter()).build();
+		prop.load(loader.getResourceAsStream(propfilename));
 	}
 
 	@Test
 	public void testUpload() throws UnsupportedEncodingException, Exception {
-		String url = "/upload";
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		URL resource = loader.getResource(filename);
-		File file = new File(resource.getFile());
-		mockMvc.perform(
-				fileUpload(url)
-						.file(filename, getBytesFromFile(file))
-						.accept(MediaType
-								.parseMediaType("application/json;charset=UTF-8")))
-				.andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.files").exists())
-				.andExpect(jsonPath("$.files").isArray())
-				.andExpect(jsonPath("$.files[0].id").exists())
-				.andExpect(jsonPath("$.files[0].name").exists())
-				.andExpect(jsonPath("$.files[0].size").exists())
-				.andExpect(jsonPath("$.files[0].url").exists())
-				.andExpect(jsonPath("$.files[0].thumbnailUrl").exists())
-				.andExpect(jsonPath("$.files[0].deleteType").value("DELETE"))
-				.andExpect(jsonPath("$.files[0].deleteUrl").exists())
-				.andExpect(jsonPath("$.files[0].emotionUrl").exists());
+		uploadfileForTest(filename);
 	}
 
 	@Test
+	@Transactional
 	public void testThumbnails() throws Exception {
-		String url = "/thumbnail/{id}";
-		String id = "2";
+		ImageVO vo = uploadfileForTest(filename);
 		MockHttpServletResponse response = mockMvc
 				.perform(
-						get(url, id)
-								.param("size",
-										Integer.toString(ThumbnailSize.MEDIUM_SIZE
-												.getId()))
-								.accept(MediaType
-										.parseMediaType("application/json;charset=UTF-8")))
-				.andExpect(status().isOk()).andReturn().getResponse();
+						get(vo.getThumbnailUrl()).param(
+								"size",
+								Integer.toString(ThumbnailSize.MEDIUM_SIZE
+										.getId()))).andExpect(status().isOk())
+				.andReturn().getResponse();
 		String contenttype = response.getContentType();
 		String fileformatname = contenttype.substring(
 				contenttype.lastIndexOf("/") + 1, contenttype.length());
 
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL resource = loader.getResource(filename);
 		File file = new File(resource.getFile());
 		String outpath = file.getParentFile().getCanonicalPath()
-				+ File.separatorChar + outfilename + "." + fileformatname;
+				+ File.separatorChar + UUID.randomUUID() + "." + fileformatname;
 		System.out.println("outpath: " + outpath);
 		FileOutputStream out = new FileOutputStream(outpath);
 		out.write(response.getContentAsByteArray());
@@ -124,15 +112,82 @@ public class ImageControllerTest {
 
 	@Test
 	@Transactional
-	public void testDelete() throws IOException, Exception {
-		String url = "/upload";
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	public void testPicure() throws JsonParseException, JsonMappingException,
+			UnsupportedEncodingException, IOException, Exception {
+		ImageVO vo = uploadfileForTest(filename);
+		MockHttpServletResponse response = mockMvc.perform(get(vo.getUrl()))
+				.andExpect(status().isOk()).andReturn().getResponse();
+		String contenttype = response.getContentType();
+		String fileformatname = contenttype.substring(
+				contenttype.lastIndexOf("/") + 1, contenttype.length());
+
 		URL resource = loader.getResource(filename);
+		File file = new File(resource.getFile());
+		String outpath = file.getParentFile().getCanonicalPath()
+				+ File.separatorChar + UUID.randomUUID() + "." + fileformatname;
+		System.out.println("outpath: " + outpath);
+		FileOutputStream out = new FileOutputStream(outpath);
+		out.write(response.getContentAsByteArray());
+		out.flush();
+		out.close();
+	}
+
+	@Test
+	@Transactional
+	public void testDelete() throws IOException, Exception {
+		String url;
+		ImageVO vo = uploadfileForTest(filename);
+		System.out.println(vo.getId());
+		url = vo.getDeleteUrl();
+		mockMvc.perform(
+				delete(url)
+						.accept(MediaType
+								.parseMediaType("application/json;charset=UTF-8")))
+				.andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].success").value(true));
+	}
+
+	@Test
+	@Transactional
+	public void testConvert() throws JsonParseException, JsonMappingException,
+			UnsupportedEncodingException, IOException, Exception {
+		// "id1", "id2", "option", "size"
+		ImageVO srcVO = uploadfileForTest(sourcefilename);
+		ImageVO matchVO = uploadfileForTest(matchfilename);
+		String url = prop.getProperty("url_convert");
+		Long option = 1L;
+		ThumbnailSize thumbnail_Enum = ThumbnailSize.MEDIUM_SIZE;
+		mockMvc.perform(
+				get(url).param("id1", String.valueOf(srcVO.getId()))
+						.param("id2", String.valueOf(matchVO.getId()))
+						.param("option", String.valueOf(option))
+						.param("size", String.valueOf(thumbnail_Enum.getId()))
+						.accept(MediaType
+								.parseMediaType("application/json;charset=UTF-8")))
+				.andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.filename").exists());
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 */
+	private ImageVO uploadfileForTest(String uploadfilename) throws Exception,
+			IOException, UnsupportedEncodingException, JsonParseException,
+			JsonMappingException {
+		String url = prop.getProperty("url_upload");
+		URL resource = loader.getResource(uploadfilename);
 		File file = new File(resource.getFile());
 		MockHttpServletResponse reponse = mockMvc
 				.perform(
 						fileUpload(url)
-								.file(filename, getBytesFromFile(file))
+								.file(uploadfilename, getBytesFromFile(file))
+								.contentType(MediaType.IMAGE_JPEG)
 								.accept(MediaType
 										.parseMediaType("application/json;charset=UTF-8")))
 				.andDo(print()).andExpect(status().isOk())
@@ -147,50 +202,12 @@ public class ImageControllerTest {
 				.andExpect(jsonPath("$.files[0].deleteUrl").exists())
 				.andExpect(jsonPath("$.files[0].emotionUrl").exists())
 				.andReturn().getResponse();
-
 		Map<String, List<ImageVO>> result = mapper.readValue(
-				reponse.getContentAsString(), Map.class);
-		List<ImageVO> list = (List<ImageVO>) result.get("files");
-
-		ImageVO vo = list.get(0);
-		Long id = vo.getId();
-		System.out.println(id);
-		url = "/delete/{id}";
-		mockMvc.perform(
-				delete(url, id)
-						.accept(MediaType
-								.parseMediaType("application/json;charset=UTF-8")))
-				.andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].success").value(true));
-	}
-
-	@Test
-	public void testConvert() {
-		// using mockobject
-		// accountDao = easyMock.createMock(AccountDao.class) ;
-		// accountService = new AccountServiceImpl(accountDao);
-		//
-		// Account account = new Account(TEST_ACCOUNT_NO, 100);
-		// accountDao.findAccount(TEST_ACCOUNT_NO);
-		// easyMock.expectLastCall().andReturn(account);
-		// account.setBalance(150);
-		// accountDao.updateAccount(account);
-		// easyMock.replay();
-		// accountService.deposit(TEST_ACCOUNT_NO, 50);
-		// easyMock.verify();
-
-		ThumbnailSize Thumbnail_Enum = ThumbnailSize.MEDIUM_SIZE;
-		int srcId = 5;
-		int destId = 6;
-		int option = 1;
-		controller.convert(srcId, destId, option, Thumbnail_Enum.getId());
-	}
-
-	@Test
-	public void testPicure() {
-		Long id = 12L;
-		// controller.picture(null, id);
+				reponse.getContentAsString(),
+				new TypeReference<Map<String, List<ImageVO>>>() {
+				});
+		ImageVO vo = result.get("files").get(0);
+		return vo;
 	}
 
 	public static byte[] getBytesFromFile(File file) throws IOException {
@@ -226,4 +243,13 @@ public class ImageControllerTest {
 		return bytes;
 	}
 
+	class MockImageController extends ImageController {
+		public void setImageDao(ImageDao imageDao) {
+			this.imageDao = imageDao;
+		}
+
+		public void setFileUploadDirectory(String uploadDir) {
+			this.fileUploadDirectory = uploadDir;
+		}
+	}
 }
