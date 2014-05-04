@@ -16,7 +16,7 @@
 		lazy-init="true">
 		<property name="locations">
 			<list>
-				<value>classpath*:hibernate.properties</value>
+				<value>classpath*:hibernate-test.properties</value>
 			</list>
 		</property>
 	</bean>
