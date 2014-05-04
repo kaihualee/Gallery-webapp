@@ -31,13 +31,13 @@
 	<!--数据源配置Bean -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${jdbc.url}" />
-		<property name="username" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-		<property name="maxActive" value="${maxActive}" />
-		<property name="maxWait" value="${maxWait}" />
-		<property name="maxIdle" value="${maxIdle}" />
+		<property name="driverClassName" value="${spring.jdbc.driverClassName}" />
+		<property name="url" value="${spring.jdbc.url}" />
+		<property name="username" value="${spring.jdbc.username}" />
+		<property name="password" value="${spring.jdbc.password}" />
+		<property name="maxActive" value="${spring.maxActive}" />
+		<property name="maxWait" value="${spring.maxWait}" />
+		<property name="maxIdle" value="${spring.maxIdle}" />
 	</bean>
 
 	<bean id="sessionFactory"
@@ -50,14 +50,14 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
-				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
-				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
-				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
-				<prop key="hibernate.transaction.factory_class">${hibernate.transaction.factory_class}</prop>
-				<prop key="hibernate.connection.pool_size">${hibernate.connection.pool_size}</prop>
-				<prop key="hibernate.connection.autocommit">${hibernate.connection.autocommit}</prop>
-				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+				<prop key="hibernate.dialect">${spring.hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${spring.hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${spring.hibernate.format_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${spring.hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.transaction.factory_class">${spring.hibernate.transaction.factory_class}</prop>
+				<prop key="hibernate.connection.pool_size">${spring.hibernate.connection.pool_size}</prop>
+				<prop key="hibernate.connection.autocommit">${spring.hibernate.connection.autocommit}</prop>
+				<prop key="hibernate.jdbc.batch_size">${spring.hibernate.jdbc.batch_size}</prop>
 			</props>
 		</property>
 	</bean>

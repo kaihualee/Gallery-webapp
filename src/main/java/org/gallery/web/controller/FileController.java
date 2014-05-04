@@ -47,7 +47,7 @@ public class FileController {
 			.getLogger(FileController.class);
 
 	@Autowired
-	@Value(value = "#{'${app.filesystem.dir}'}")
+	@Value(value = "#{'${spring.app.filesystem.dir}'}")
 	private String fileUploadDirectory;
 
 	@Autowired

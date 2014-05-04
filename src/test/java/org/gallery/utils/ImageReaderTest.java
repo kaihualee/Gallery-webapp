@@ -1,4 +1,4 @@
-package org.gallery.web;
+package org.gallery.utils;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -27,7 +27,6 @@ public class ImageReaderTest {
 	private final int MEDIA_SIZE = 1024;
 	private final int BIG_SIZE = 2048;
 
-	@Test
 	public void testSave() throws IOException {
 		String formartName = "tif";
 		String[] writerNames = ImageIO.getWriterFormatNames();
@@ -49,7 +48,6 @@ public class ImageReaderTest {
 		ImageIO.write(thumbnail2, formartName, out2);
 	}
 
-	@Test
 	public void testResize() throws IOException {
 		String[] originalFiles = { "测试2.bmp", "测试1.tif" };
 
@@ -126,7 +124,6 @@ public class ImageReaderTest {
 		return true;
 	}
 
-	@Test
 	public void testCompressPic() {
 		if (compressPic(baseFilePath + File.separator + "result.tif",
 				baseFilePath + File.separator + "compressed.jpg")) {

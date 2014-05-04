@@ -78,7 +78,7 @@ public class ImageController {
 	protected ImageDao imageDao;
 
 	@Autowired
-	@Value(value = "#{'${app.filesystem.dir}'}")
+	@Value(value = "#{'${spring.app.filesystem.dir}'}")
 	protected String fileUploadDirectory;
 
 

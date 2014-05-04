@@ -45,7 +45,7 @@ public class ImageDaoTest {
 	private File file = null;
 
 	@Before
-	public void tearUp() {
+	public void setUp() {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL url = loader.getResource(jsonfilename);
 		file = new File(url.getFile());

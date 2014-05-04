@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -37,8 +38,11 @@ public class ImageConvertTest {
 	final String sourceFileName = "img-test/source.jpg";
 	final String destFileName = "img-test/match.jpg";
 
+	final String specialSourceFilename = "img-test/050359.tif";
+	final String specialMatchFilename = "img-test/src10small.jpg";
+
 	@Before
-	public void tearUp() {
+	public void setUp() {
 		System.out.println(System.getProperty("java.library.path"));
 		System.out.println("-----------------------------------------------");
 	}
@@ -56,7 +60,7 @@ public class ImageConvertTest {
 				.getCanonicalPath());
 		Pointer<Byte> destImageName = pointerToCString(destFile
 				.getCanonicalPath());
-		String resultname = "out.jpg";
+		String resultname = UUID.randomUUID().toString() + ".jpg";
 		String outFileName = srcFile.getParentFile().getPath()
 				+ File.separatorChar + resultname;
 		Pointer<Byte> outImageName = pointerToCString(outFileName);
