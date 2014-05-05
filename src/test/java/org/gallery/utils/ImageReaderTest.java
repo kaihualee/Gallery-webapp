@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -15,26 +16,38 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import org.apache.commons.lang.StringUtils;
+import org.gallery.common.ThumbnailSize;
 import org.imgscalr.Scalr;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ImageReaderTest {
 
-	private final String baseFilePath = "C:\\Users\\Dahaka\\workspace\\ImageConvertDll\\ImageConvertDll\\Release";
+	final String imgfilename = "img-test/050359.tif";
 
-	private final int SMALL_SIZE = 150;
-	private final int MEDIA_SIZE = 1024;
-	private final int BIG_SIZE = 2048;
+	private ClassLoader loader;
+	private String baseFilePath;
+	private File file;
 
+	@Before
+	public void setUp() throws IOException {
+		loader = Thread.currentThread().getContextClassLoader();
+		URL url = loader.getResource(imgfilename);
+		file = new File(url.getFile());
+		baseFilePath = file.getParentFile().getCanonicalPath();
+	}
+
+	@Test
 	public void testSave() throws IOException {
-		String formartName = "tif";
+
 		String[] writerNames = ImageIO.getWriterFormatNames();
 		System.out.println(Arrays.toString(writerNames));
-		String fileName = "retrive.tif";
-		BufferedImage bufferImage = ImageIO.read(new File(baseFilePath
-				+ File.separatorChar + fileName));
 
+		BufferedImage bufferImage = ImageIO.read(file);
+
+		String formartName = imgfilename.substring(
+				imgfilename.lastIndexOf('.') + 1, imgfilename.length());
 		File out = new File(baseFilePath + File.separatorChar + "result."
 				+ formartName);
 		System.out.println(out.getAbsolutePath());
@@ -42,14 +55,17 @@ public class ImageReaderTest {
 				+ formartName);
 		System.out.println(out2.getAbsolutePath());
 
-		BufferedImage thumbnail = Scalr.resize(bufferImage, SMALL_SIZE);
-		BufferedImage thumbnail2 = Scalr.resize(bufferImage, MEDIA_SIZE);
+		BufferedImage thumbnail = Scalr.resize(bufferImage,
+				ThumbnailSize.SMALL_SIZE.getSize());
+		BufferedImage thumbnail2 = Scalr.resize(bufferImage,
+				ThumbnailSize.MEDIUM_SIZE.getSize());
 		ImageIO.write(thumbnail, formartName, out);
 		ImageIO.write(thumbnail2, formartName, out2);
 	}
 
+	@Test
 	public void testResize() throws IOException {
-		String[] originalFiles = { "测试2.bmp", "测试1.tif" };
+		String[] originalFiles = { "050359.tif"};
 
 		for (String originalFile : originalFiles) {
 			String srcPath = baseFilePath + File.separatorChar + originalFile;
@@ -66,22 +82,22 @@ public class ImageReaderTest {
 			// 该文件名 formatName fileName
 			// Small Thumbnails
 			BufferedImage thumbnail_small = Scalr.resize(originalImage,
-					SMALL_SIZE);
+					ThumbnailSize.SMALL_SIZE.getSize());
 			ImageIO.write(thumbnail_small, fileFormatName, new File(
-					storageDirectory + File.separatorChar + SMALL_SIZE
+					storageDirectory + File.separatorChar + ThumbnailSize.SMALL_SIZE.getSize()
 							+ newFilenameBase + "." + fileFormatName));
 
 			// Medium Thumbnail
 			BufferedImage thumbnail_medium = Scalr.resize(originalImage,
-					MEDIA_SIZE);
+					ThumbnailSize.MEDIUM_SIZE.getSize());
 			ImageIO.write(thumbnail_medium, fileFormatName, new File(
-					storageDirectory + File.separatorChar + MEDIA_SIZE
+					storageDirectory + File.separatorChar + ThumbnailSize.MEDIUM_SIZE.getSize()
 							+ newFilenameBase + "." + fileFormatName));
 
 			// Big Thumbnails
-			BufferedImage thumbnail_big = Scalr.resize(originalImage, BIG_SIZE);
+			BufferedImage thumbnail_big = Scalr.resize(originalImage, ThumbnailSize.BIG_SIZE.getSize());
 			compressImg(thumbnail_big, new File(storageDirectory
-					+ File.separatorChar + BIG_SIZE + newFilenameBase + "."
+					+ File.separatorChar + ThumbnailSize.BIG_SIZE.getSize() + newFilenameBase + "."
 					+ fileFormatName), 0.6);
 
 		}

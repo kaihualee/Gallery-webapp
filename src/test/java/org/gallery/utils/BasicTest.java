@@ -89,6 +89,7 @@ public class BasicTest {
 		Assert.assertNotNull(inputStream);
 		Reader reader = new InputStreamReader(inputStream);
 		IDataSet setupDataSet = new FlatXmlDataSet(reader);
+		
 		DatabaseOperation.CLEAN_INSERT.execute(dbunitConnection, setupDataSet);
 		ImageDao imageDao =ctx.getBean(ImageDao.class);
 		ImageEntity entity = imageDao.get(1L);

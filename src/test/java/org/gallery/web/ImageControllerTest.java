@@ -79,6 +79,7 @@ public class ImageControllerTest {
 	}
 
 	@Test
+	@Transactional
 	public void testUpload() throws UnsupportedEncodingException, Exception {
 		uploadfileForTest(filename);
 	}
