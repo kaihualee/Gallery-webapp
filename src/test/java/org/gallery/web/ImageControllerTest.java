@@ -88,26 +88,27 @@ public class ImageControllerTest {
 	@Transactional
 	public void testThumbnails() throws Exception {
 		ImageVO vo = uploadfileForTest(filename);
-		MockHttpServletResponse response = mockMvc
-				.perform(
-						get(vo.getThumbnailUrl()).param(
-								"size",
-								Integer.toString(ThumbnailSize.MEDIUM_SIZE
-										.getId()))).andExpect(status().isOk())
-				.andReturn().getResponse();
-		String contenttype = response.getContentType();
-		String fileformatname = contenttype.substring(
-				contenttype.lastIndexOf("/") + 1, contenttype.length());
+		for (ThumbnailSize thumbnail_Enum : ThumbnailSize.values()) {
+			MockHttpServletResponse response = mockMvc
+					.perform(
+							get(vo.getThumbnailUrl()).param("size",
+									Integer.toString(thumbnail_Enum.getId())))
+					.andExpect(status().isOk()).andReturn().getResponse();
+			String contenttype = response.getContentType();
+			String fileformatname = contenttype.substring(
+					contenttype.lastIndexOf("/") + 1, contenttype.length());
 
-		URL resource = loader.getResource(filename);
-		File file = new File(resource.getFile());
-		String outpath = file.getParentFile().getCanonicalPath()
-				+ File.separatorChar + UUID.randomUUID() + "." + fileformatname;
-		System.out.println("outpath: " + outpath);
-		FileOutputStream out = new FileOutputStream(outpath);
-		out.write(response.getContentAsByteArray());
-		out.flush();
-		out.close();
+			URL resource = loader.getResource(filename);
+			File file = new File(resource.getFile());
+			String outpath = file.getParentFile().getCanonicalPath()
+					+ File.separatorChar + UUID.randomUUID() + "."
+					+ fileformatname;
+			System.out.println("outpath: " + outpath);
+			FileOutputStream out = new FileOutputStream(outpath);
+			out.write(response.getContentAsByteArray());
+			out.flush();
+			out.close();
+		}
 
 	}
 
@@ -157,17 +158,46 @@ public class ImageControllerTest {
 		ImageVO srcVO = uploadfileForTest(sourcefilename);
 		ImageVO matchVO = uploadfileForTest(matchfilename);
 		String url = prop.getProperty("url_convert");
-		Long option = 1L;
-		ThumbnailSize thumbnail_Enum = ThumbnailSize.MEDIUM_SIZE;
-		mockMvc.perform(
-				get(url).param("id1", String.valueOf(srcVO.getId()))
-						.param("id2", String.valueOf(matchVO.getId()))
-						.param("option", String.valueOf(option))
-						.param("size", String.valueOf(thumbnail_Enum.getId()))
-						.accept(MediaType
-								.parseMediaType("application/json;charset=UTF-8")))
-				.andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.filename").exists());
+		Long option = 2L;
+		for (ThumbnailSize thumbnail_Enum : ThumbnailSize.values()) {
+			MockHttpServletResponse response = mockMvc
+					.perform(
+							get(url).param("id1", String.valueOf(srcVO.getId()))
+									.param("id2",
+											String.valueOf(matchVO.getId()))
+									.param("option", String.valueOf(option))
+									.param("size",
+											String.valueOf(thumbnail_Enum
+													.getId()))
+									.accept(MediaType
+											.parseMediaType("application/json;charset=UTF-8")))
+					.andDo(print()).andExpect(status().isOk())
+					.andExpect(jsonPath("$.filename").exists()).andReturn()
+					.getResponse();
+			Map<String, String> result = mapper.readValue(
+					response.getContentAsString(),
+					new TypeReference<Map<String, String>>() {
+					});
+			
+			//download file
+			String dwfilename = result.get("filename");
+			response = mockMvc
+					.perform(
+							get("/download/{name:.+}", dwfilename).param(
+									"attachment", "false"))
+					.andExpect(status().isOk()).andReturn().getResponse();
+
+			URL resource = loader.getResource(filename);
+			File file = new File(resource.getFile());
+			String outpath = file.getParentFile().getCanonicalPath()
+					+ File.separatorChar + UUID.randomUUID() + dwfilename;
+			System.out.println("outpath: " + outpath);
+			FileOutputStream out = new FileOutputStream(outpath);
+			out.write(response.getContentAsByteArray());
+			out.flush();
+			out.close();
+
+		}
 	}
 
 	/**
