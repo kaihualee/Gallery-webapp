@@ -3,6 +3,7 @@
  */
 package org.gallery.utils;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +20,12 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.DatabaseSequenceFilter;
+import org.dbunit.database.QueryDataSet;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.FilteredDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.filter.ITableFilter;
@@ -64,12 +68,7 @@ public class BasicTest {
 				.getBean("dataSource"));
 		DatabaseConnection dbunitConnection = new DatabaseConnection(
 				connection, null);
-		IDataSet fullDataSet = dbunitConnection.createDataSet();
-		ITableFilter filter = new DatabaseSequenceFilter(dbunitConnection);
-		FilteredDataSet filteredDataSet = new FilteredDataSet(filter,
-				fullDataSet);
-		FileOutputStream xmlStream = new FileOutputStream("full-database.xml");
-		FlatXmlDataSet.write(fullDataSet, xmlStream);
+		saveDataSet(dbunitConnection, "full-database.xml");
 
 	}
 
@@ -83,18 +82,49 @@ public class BasicTest {
 		DatabaseConnection dbunitConnection = new DatabaseConnection(
 				connection, null);
 
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		InputStream inputStream = loader.getResourceAsStream(
-				"data-test/full-database.xml");
-		Assert.assertNotNull(inputStream);
-		Reader reader = new InputStreamReader(inputStream);
-		IDataSet setupDataSet = new FlatXmlDataSet(reader);
+		IDataSet expectedDataSet = getDataSet("data-test/full-database.xml");
+		DatabaseOperation.CLEAN_INSERT.execute(dbunitConnection, expectedDataSet);
+		IDataSet actualDataSet = dbunitConnection.createDataSet();
+		// Assertion.assertEquals(setupDataSet, actualDataSet);
+		//Assertion.assertEqualsIgnoreCols(expectedDataSet, actualDataSet, "image", new String[]{"id"});
 		
-		DatabaseOperation.CLEAN_INSERT.execute(dbunitConnection, setupDataSet);
-		ImageDao imageDao =ctx.getBean(ImageDao.class);
+		ImageDao imageDao = ctx.getBean(ImageDao.class);
 		ImageEntity entity = imageDao.get(1L);
 		System.out.println(entity.toString());
+
+		// 1st method
+		actualDataSet = dbunitConnection
+				.createDataSet(new String[] { "image" });
+
+		// filter 2nd method
+		IDataSet filterDataSet = new FilteredDataSet(new String[] { "image" },
+				dbunitConnection.createDataSet());
+
+		// Filter dataset 3nd method
+		QueryDataSet queryDataSet = new QueryDataSet(dbunitConnection);
+		queryDataSet.addTable("image", "select * from image limit 10");
+		FlatXmlDataSet.write(queryDataSet, new FileOutputStream(
+				"query-dataset.xml"));
 	}
+
+	/**
+	 * @param dbunitConnection
+	 * @throws SQLException
+	 * @throws DataSetException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private void saveDataSet(DatabaseConnection dbunitConnection,
+			String filename) throws SQLException, DataSetException,
+			FileNotFoundException, IOException {
+		IDataSet actualDataSet = dbunitConnection.createDataSet();
+		ITableFilter filter = new DatabaseSequenceFilter(dbunitConnection);
+		FilteredDataSet filteredDataSet = new FilteredDataSet(filter,
+				actualDataSet);
+		FileOutputStream xmlStream = new FileOutputStream(filename);
+		FlatXmlDataSet.write(filteredDataSet, xmlStream);
+	}
+
 	// Set<String> keys = result.keySet();
 	// StringBuffer str = new StringBuffer();
 	// for (Iterator<String> it = keys.iterator(); it.hasNext();) {
@@ -113,4 +143,19 @@ public class BasicTest {
 	// easyMock.replay();
 	// accountService.deposit(TEST_ACCOUNT_NO, 50);
 	// easyMock.verify();
+
+	/**
+	 * @param filename
+	 * @return
+	 * @throws IOException
+	 * @throws DataSetException
+	 */
+	private IDataSet getDataSet(String filename) throws IOException,
+			DataSetException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		InputStream inputStream = loader.getResourceAsStream(filename);
+		Assert.assertNotNull(inputStream);
+		Reader reader = new InputStreamReader(inputStream);
+		return new FlatXmlDataSet(reader);
+	}
 }
