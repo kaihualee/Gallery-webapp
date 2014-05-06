@@ -106,29 +106,6 @@ public class ImageController {
 		return list;
 	}
 
-	@RequestMapping(value = "/upload", method = RequestMethod.GET)
-	public @ResponseBody
-	List upload() {
-		int pageNum = 1;
-		log.debug("uploadGet called");
-		PageBean pageBean = new PageBean();
-		pageBean.setPageNum(pageNum);
-		List<ImageEntity> images = imageDao.getAll(pageBean);
-		List<ImageVO> list = new ArrayList<>();
-		for (ImageEntity entity : images) {
-			ImageVO imageVO = new ImageVO(entity);
-			imageVO.setId(entity.getId());
-			imageVO.setUrl("/picture/" + entity.getId());
-			imageVO.setThumbnailUrl("/thumbnail/" + entity.getId());
-			imageVO.setDeleteUrl("/delete/" + entity.getId());
-			imageVO.setDeleteType("DELETE");
-			list.add(imageVO);
-			log.info(imageVO.toString());
-		}
-		log.debug("Returning: {}", list);
-		return list;
-	}
-
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody
 	Map upload(MultipartHttpServletRequest request, HttpServletResponse response)
@@ -285,7 +262,7 @@ public class ImageController {
 			@RequestParam("attachment") boolean attachment) {
 		String realPath = fileUploadDirectory + File.separator + filename;
 		File imageFile = new File(realPath);
-		response.setContentType("image/png");
+		response.setContentType("image/jpeg");
 		response.setContentLength((int) imageFile.length());
 		if (attachment)
 			try {
@@ -381,11 +358,13 @@ public class ImageController {
 
 		Pointer<Byte> srcImageName = pointerToCString(srcImagePath);
 		Pointer<Byte> destImageName = pointerToCString(destImagePath);
-		ImageConvertDllLibrary.convertImage2(srcImageName, destImageName,
-				option);
+		String resultImageName = UUID.randomUUID().toString()+".jpg";
+		Pointer<Byte> outImageName = pointerToCString(fileUploadDirectory+File.separatorChar+resultImageName);
+		ImageConvertDllLibrary.convertImage3(srcImageName, destImageName,
+				option,outImageName);
 
 		Map<String, String> success = new HashMap<String, String>();
-		success.put("filename", "converted." + thumbnail_Enum.getFormatName());
+		success.put("filename",resultImageName);
 		return success;
 	}
 
