@@ -1,45 +1,53 @@
 $(function() {
 
 	// Debug JavaScript
-	//lkh_appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
-	$.getJSON("../tmp/color.json", function(json) {
-		$('#colorThemes tbody').empty();
-		//Display ColorTheme
-		for (var i = 0; i < json.colorNum; ++i) {
-			//<td width="60" height="60" id="cb1" style="background-color: rgb(62, 102, 0);"></td>
-			var segment = $('<tr/>').append($('<td/>').css({
-				backgroundColor : $.sprintf("#%06x", json.rgbs[i]),
-				'width' : 60,
-				'height' : 60
-			})).append($('<td/>').text($.sprintf("#%06x", json.rgbs[i]))).append($('<td/>').text($.sprintf("%f%%", (json.percents[i].toFixed(3)) * 100)));
-			//var segment = '<tr ><td width="60" height="60" id="cb1" ' + 'style="background-color:' + $.sprintf("#%06x", json.rgbs[i]) + ';"></td></tr>';
-			$(segment).appendTo('#colorThemes tbody');
-		}
-	});
+	// lkh_appendImageTo("../tmp/Desert.jpg", "sourceDiv", true);
+	// $.getJSON("../tmp/color.json", function(json) {
+	// $('#colorThemes tbody').empty();
+	// //Display ColorTheme
+	// for (var i = 0; i < json.colorNum; ++i) {
+	// //<td width="60" height="60" id="cb1" style="background-color: rgb(62,
+	// 102,
+	// 0);"></td>
+	// var segment = $('<tr/>').append($('<td/>').css({
+	// backgroundColor : $.sprintf("#%06x", json.rgbs[i]),
+	// 'width' : 60,
+	// 'height' : 60
+	// })).append($('<td/>').text($.sprintf("#%06x",
+	// json.rgbs[i]))).append($('<td/>').text($.sprintf("%f%%",
+	// (json.percents[i].toFixed(3)) * 100)));
+	// //var segment = '<tr ><td width="60" height="60" id="cb1" ' +
+	// 'style="background-color:' + $.sprintf("#%06x", json.rgbs[i]) +
+	// ';"></td></tr>';
+	// $(segment).appendTo('#colorThemes tbody');
+	// }
+	// });
 
 	messages = {
 		// Error
-		"upload_require" : ['bottom-right', 'bangTidy', '请先上传图片.'],
-		"service_error" : ['bottom-right', 'bangTidy', '请求服务器出错.'],
-		"loading_img_error" : ['bottom-right', 'bangTidy', '加载图片失败.'],
-		"upload_error" : ['bottom-right', 'bangTidy', '上传失败.'],
+		"upload_require" : [ 'bottom-right', 'bangTidy', '请先上传图片.' ],
+		"service_error" : [ 'bottom-right', 'bangTidy', '请求服务器出错.' ],
+		"loading_img_error" : [ 'bottom-right', 'bangTidy', '加载图片失败.' ],
+		"upload_error" : [ 'bottom-right', 'bangTidy', '上传失败.' ],
 		// Info
-		"upload_success" : ['bottom-right', 'bangTidy', '上传完毕.'],
-		"no_more" : ['bottom-right', 'bangTidy', '没有可以加载.'],
-		"convert_sucess" : ['bottom-right', 'bangTidy', '图片转换成功.'],
-		"processing" : ['bottom-right', 'bangTidy', '正在处理中，请稍等...'],
+		"upload_success" : [ 'bottom-right', 'bangTidy', '上传完毕.' ],
+		"no_more" : [ 'bottom-right', 'bangTidy', '没有可以加载.' ],
+		"convert_sucess" : [ 'bottom-right', 'bangTidy', '图片转换成功.' ],
+		"processing" : [ 'bottom-right', 'bangTidy', '正在处理中，请稍等...' ],
 	};
 
 	// Url Mapping Information
 	baseUrl = "../action";
 	urls = {
-		"upload" : [baseUrl + "/upload", 'POST', 'json'],
-		"uploadfile" : [baseUrl + "/uploadfile", 'POST', 'json'],
-		"downloadfile" : [baseUrl + "/downloadfile/%d?attachment=%s", 'GET', 'json'],
-		"download" : [baseUrl + "/download/%s?attachment=%s&%s", 'GET', 'json'],
-		"thumbnails_list" : [baseUrl + '/list?pageNum=%d', 'GET', 'json'],
-		"thumbnail" : [baseUrl + '/thumbnail/%d?size=%d', 'GET', 'json'],
-		"convert" : [baseUrl + "/convert?id1=%d&id2=%d&option=%d&size=%d", 'GET', 'json'],
+		"upload" : [ baseUrl + "/upload", 'POST', 'json' ],
+		"uploadfile" : [ baseUrl + "/uploadfile", 'POST', 'json' ],
+		"downloadfile" : [ baseUrl + "/downloadfile/%d?attachment=%s", 'GET',
+				'json' ],
+		"download" : [ baseUrl + "/download/%s?attachment=%s&%s", 'GET', 'json' ],
+		"thumbnails_list" : [ baseUrl + '/list?pageNum=%d', 'GET', 'json' ],
+		"thumbnail" : [ baseUrl + '/thumbnail/%d?size=%d', 'GET', 'json' ],
+		"convert" : [ baseUrl + "/convert?id1=%d&id2=%d&option=%d&size=%d",
+				'GET', 'json' ],
 	};
 
 	sizes = {
@@ -48,72 +56,125 @@ $(function() {
 		"big" : 2
 	};
 
+	options = {
+		"Auto" : 1,
+		"Percentage" : 1,
+		"NearestHue" : 2,
+		"Light" : 3
+	};
+
 	// Initialize thumbnails sidebar via jQUery
-	$('#loading-thumbnails-btn').on('click', getThumbnails('loading-thumbnails-btn', urls.thumbnails_list)).click();
+	$('#loading-thumbnails-btn').on('click',
+			getThumbnails('loading-thumbnails-btn', urls.thumbnails_list))
+			.click();
 
 	$('.selectpicker').selectpicker();
 
 	// Initialize the jQuery File Upload widget:
-	$('#fileupload').fileupload({
-		// Uncomment the following to send cross-domain cookies:
-		// xhrFields: {withCredentials: true},
-		maxNumberOfFiles : 1,
-		url : urls.upload[0],
-		dataType : urls.upload[2],
-		add : function(e, data) {
-			if (data.files && data.files[0]) {
-				prepareLoading("sourceDiv", true);
-				data.submit();
-			}
-		},
-		done : function(e, data) {
-			var url = $.sprintf(urls.thumbnail[0], data.result.files[0].id, sizes.medium);
-			lkh_appendImageTo(url, "sourceDiv");
-			$('#sourceDiv').attr('data_id', data.result.files[0].id);
-			var message = messages.upload_success;
-			$('.' + message[0]).notify({
-				message : {
-					text : message[2]
-				},
-				type : message[1],
-				fadeOut : {
-					delay : 2500
-				}
-			}).show();
-			console.log('Upload finished.');
-			$.getJSON("../action/colortheme/" + data.result.files[0].id, function(json) {
-				$('#colorThemes tbody').empty();
-				//Display ColorTheme
-				for (var i = 0; i < json.colorNum; ++i) {
-					//<td width="60" height="60" id="cb1" style="background-color: rgb(62, 102, 0);"></td>
-					var segment = $('<tr/>').append($('<td/>').css({
-						backgroundColor : $.sprintf("#%06x", json.rgbs[i]),
-						'width' : 60,
-						'height' : 60
-					})).append($('<td/>').text($.sprintf("#%06x", json.rgbs[i]))).append($('<td/>').text($.sprintf("%f%%", (json.percents[i].toFixed(3)) * 100)));
-					//var segment = '<tr ><td width="60" height="60" id="cb1" ' + 'style="background-color:' + $.sprintf("#%06x", json.rgbs[i]) + ';"></td></tr>';
-					$(segment).appendTo('#colorThemes tbody');
-				}
-			});
-		},
-		fail : function(e, data) {
-			var message = messages.upload_error;
-			$('.' + message[0]).notify({
-				message : {
-					text : message[2]
-				},
-				type : message[1],
-				fadeOut : {
-					delay : 2500
-				}
-			}).show();
-			console.log("Upload failed.");
-		},
-		progressall : function(e, data) {
-			var progress = parseInt(data.loaded / data.total * 100, 10);
-			$('#progress #img-progress-bar').css('width', progress + '%').text(progress);
-		}
-	});
+	$('#fileupload')
+			.fileupload(
+					{
+						// Uncomment the following to send cross-domain cookies:
+						// xhrFields: {withCredentials: true},
+						maxNumberOfFiles : 1,
+						url : urls.upload[0],
+						dataType : urls.upload[2],
+						add : function(e, data) {
+							if (data.files && data.files[0]) {
+								prepareLoading("sourceDiv", true);
+								data.submit();
+							}
+						},
+						done : function(e, data) {
+							var url = $.sprintf(urls.thumbnail[0],
+									data.result.files[0].id, sizes.medium);
+							lkh_appendImageTo(url, "sourceDiv");
+							$('#sourceDiv').attr('data_id',
+									data.result.files[0].id);
+							var message = messages.upload_success;
+							$('.' + message[0]).notify({
+								message : {
+									text : message[2]
+								},
+								type : message[1],
+								fadeOut : {
+									delay : 2500
+								}
+							}).show();
+							console.log('Upload finished.');
+							$
+									.getJSON(
+											"../action/colortheme/"
+													+ data.result.files[0].id,
+											function(json) {
+												$('#colorThemes tbody').empty();
+												// Display ColorTheme
+												for (var i = 0; i < json.colorNum; ++i) {
+													// <td width="60"
+													// height="60" id="cb1"
+													// style="background-color:
+													// rgb(62, 102, 0);"></td>
+													var segment = $('<tr/>')
+															.append(
+																	$('<td/>')
+																			.css(
+																					{
+																						backgroundColor : $
+																								.sprintf(
+																										"#%06x",
+																										json.rgbs[i]),
+																						'width' : 60,
+																						'height' : 60
+																					}))
+															.append(
+																	$('<td/>')
+																			.text(
+																					$
+																							.sprintf(
+																									"#%06x",
+																									json.rgbs[i])))
+															.append(
+																	$('<td/>')
+																			.text(
+																					$
+																							.sprintf(
+																									"%f%%",
+																									(json.percents[i]
+																											.toFixed(3)) * 100)));
+													// var segment = '<tr ><td
+													// width="60" height="60"
+													// id="cb1" '
+													// +
+													// 'style="background-color:'
+													// + $.sprintf("#%06x",
+													// json.rgbs[i]) +
+													// ';"></td></tr>';
+													$(segment)
+															.appendTo(
+																	'#colorThemes tbody');
+												}
+											});
+						},
+						fail : function(e, data) {
+							var message = messages.upload_error;
+							$('.' + message[0]).notify({
+								message : {
+									text : message[2]
+								},
+								type : message[1],
+								fadeOut : {
+									delay : 2500
+								}
+							}).show();
+							console.log("Upload failed.");
+						},
+						progressall : function(e, data) {
+							var progress = parseInt(data.loaded / data.total
+									* 100, 10);
+							$('#progress #img-progress-bar').css('width',
+									progress + '%').text(progress);
+						}
+					});
 });
 // attaching a Loading icon
 function prepareLoading(containerId, empty) {
@@ -173,37 +234,40 @@ function getThumbnails(btnId, url) {
 		}).always(function() {
 			console.log(url + ' complete');
 			btn.button('reset');
-		}).done(function(data) {
-			console.log(url + ' success');
-			console.log(data);
-			if (data.length == 0) {
-				$(btn).addClass("disabled");
-				var message = messages.no_more;
-				$('.' + message[0]).notify({
-					message : {
-						text : message[2]
-					},
-					type : message[1],
-					fadeOut : {
-						delay : 2500
+		}).done(
+				function(data) {
+					console.log(url + ' success');
+					console.log(data);
+					if (data.length == 0) {
+						$(btn).addClass("disabled");
+						var message = messages.no_more;
+						$('.' + message[0]).notify({
+							message : {
+								text : message[2]
+							},
+							type : message[1],
+							fadeOut : {
+								delay : 2500
+							}
+						}).show();
+					} else {
+						pageNum++;
+						$.each(data, function(index, img) {
+							img.data_url = $.sprintf(urls.thumbnail[0], img.id,
+									sizes.small);
+							var element = tmpl_func(img);
+							// $('#image-thumbnails').append(element);
+							$(element).appendTo(
+									$('#img-thumbnails', $(btn).parent()));
+							$(element).fadeIn("slow");
+							console.log(tmpl_func(img));
+						});
+						// customer click event handler
+						$('.thumbnail-img').on("click", matchImage);
+
 					}
-				}).show();
-			} else {
-				pageNum++;
-				$.each(data, function(index, img) {
-					img.data_url = $.sprintf(urls.thumbnail[0], img.id, sizes.small);
-					var element = tmpl_func(img);
-					// $('#image-thumbnails').append(element);
-					$(element).appendTo($('#img-thumbnails', $(btn).parent()));
-					$(element).fadeIn("slow");
-					console.log(tmpl_func(img));
-				});
-				// customer click event handler
-				$('.thumbnail-img').on("click", matchImage);
 
-			}
-
-		}).fail(function(jqXHR, textStatus, errorThrown) {
+				}).fail(function(jqXHR, textStatus, errorThrown) {
 			var message = messages.service_error;
 			$('.' + message[0]).notify({
 				message : {
@@ -248,8 +312,10 @@ function matchImage(event) {
 		}).show();
 		console.log(urls.convert);
 		prepareLoading('resultDiv', true);
+		eval("var option=options."+ $('#option_id').selectpicker('val'));
+		eval("var size=sizes."+ $('#size_id').selectpicker('val'));
 		$.ajax({
-			url : $.sprintf(urls.convert[0], sid, tid, 1, sizes.medium),
+			url : $.sprintf(urls.convert[0], sid, tid, option, size),
 			type : urls.convert[1],
 			dataType : urls.convert[2]
 		}).always(function() {
@@ -266,21 +332,24 @@ function matchImage(event) {
 				}
 			}).show();
 			console.log(urls.convert + ' fail');
-		}).done(function(data) {
-			var message = messages.convert_sucess;
-			$('.' + message[0]).notify({
-				message : {
-					text : message[2]
-				},
-				type : message[1],
-				fadeOut : {
-					delay : 2500
-				}
-			}).show();
-			console.log(urls.convert + ' success');
-			console.log(data);
-			lkh_appendImageTo($.sprintf(urls.download[0], data.filename, "false", new Date().getTime()), "resultDiv");
-		});
+		}).done(
+				function(data) {
+					var message = messages.convert_sucess;
+					$('.' + message[0]).notify({
+						message : {
+							text : message[2]
+						},
+						type : message[1],
+						fadeOut : {
+							delay : 2500
+						}
+					}).show();
+					console.log(urls.convert + ' success');
+					console.log(data);
+					lkh_appendImageTo($.sprintf(urls.download[0],
+							data.filename, "false", new Date().getTime()),
+							"resultDiv");
+				});
 
 	}
 }
