@@ -20,6 +20,7 @@ import org.bridj.Pointer;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.gallery.model.ColorThemeEntity;
+import org.gallery.nativemethod.ImageConvertDllLibrary;
 import org.gallery.web.vo.ColorThemeVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.gallery.nativemethod.ImageConvertDllLibrary;
 
 /**
  * @author Dahaka

@@ -1,4 +1,4 @@
-package com.gallery.nativemethod;
+package org.gallery.nativemethod;
 import org.bridj.Pointer;
 import org.bridj.StructObject;
 import org.bridj.ann.Field;

@@ -21,11 +21,10 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.gallery.model.ColorThemeEntity;
+import org.gallery.nativemethod.ImageConvertDllLibrary;
 import org.gallery.web.vo.ColorThemeVO;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.gallery.nativemethod.ImageConvertDllLibrary;
 
 /**
  * @author Dahaka
