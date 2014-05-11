@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="test6"  basedir="." >
+	<property file="build.properties" />
+	<target name="test">
+		<echo message="compile classpath: ${basedir}" />
+	</target>
+</project>
