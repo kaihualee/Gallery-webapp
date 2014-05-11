@@ -16,13 +16,13 @@ import org.springframework.stereotype.Repository;
 public class LogicDaoImpl<T extends LogicEntityImpl> extends BaseDaoImpl<T>
 		implements LogicDao<T> {
 
-	public Criteria getCritera() {
+	protected Criteria getCritera() {
 		Criteria criteria = super.getSession().createCriteria(entityClass);
 		criteria.add(Restrictions.ne("status", Status.Deleted));
 		return criteria;
 	}
 
-	public Criteria getCritera(Status... status) {
+	protected Criteria getCritera(Status... status) {
 		Criteria criteria = super.getSession().createCriteria(entityClass);
 		criteria.add(Restrictions.in("status", status));
 		return criteria;

@@ -64,8 +64,8 @@ public class AccountEntity extends LogicEntityImpl {
 
 	@Override
 	public String toString() {
-		return super.toString() + " " + password + " " + email + " "
-				+ birthday.toString();
+		return "[" + super.toString() + " " + password + " " + email + " "
+				+ birthday.toString() + "]";
 	}
 
 }

@@ -50,7 +50,7 @@ public class LogicEntityImpl extends BaseEntityImpl implements StatusEntity {
 
 	@Override
 	public String toString() {
-		return super.toString() + ";" + name + " " + status;
+		return "[" + super.toString() + " " + name + " " + status + "]";
 	}
 
 }

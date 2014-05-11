@@ -51,13 +51,13 @@ public interface LogicDao<T extends LogicEntityImpl> extends BaseDao<T> {
 	 * @return
 	 */
 	public List<T> getAllByStatus(Status... status);
-	
+
 	/**
 	 * @param pageBean
 	 * @param status
 	 * @return
 	 */
-	public List<T> getAllByStatus(PageBean pageBean, Status... status); 
+	public List<T> getAllByStatus(PageBean pageBean, Status... status);
 
 	/**
 	 * 删除某个实体 默认 逻辑删除

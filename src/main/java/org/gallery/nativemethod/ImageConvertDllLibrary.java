@@ -1,4 +1,4 @@
-package com.gallery.nativemethod;
+package org.gallery.nativemethod;
 import org.bridj.BridJ;
 import org.bridj.CRuntime;
 import org.bridj.Pointer;
