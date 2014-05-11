@@ -61,26 +61,26 @@
 				<directory>src/main/jnaerator</directory>
 				<filtering>true</filtering>
 			</resource>
-			<resource>
+		</resources>
+		<testResources>
+			<testResource>
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
-				<!-- <excludes> -->
+			</testResource>
 				<!-- <exclude>**/*test.*</exclude> -->
-				<!-- <exclude>**/*Test.*</exclude> -->
 				<!-- </excludes> -->
-			</resource>
-		</resources>
+		</testResources>
 		<plugins>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
-<!-- 				<configuration> -->
-<!-- 					<includes> -->
-<!-- 						<include>src/main/java/**/*.java</include> -->
-<!-- 						<include>src/main/native/**/*.java</include> -->
-<!-- 					</includes> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-compiler-plugin</artifactId> -->
+			<!-- <configuration> -->
+			<!-- <includes> -->
+			<!-- <include>src/main/java/**/*.java</include> -->
+			<!-- <include>src/main/native/**/*.java</include> -->
+			<!-- </includes> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
