@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<ACCOUNT ID="1" CREATEDATE="2014-05-09 20:24:00.933"
+		MODIFYTIME="2014-05-09 20:24:00.933" NAME="likaihua" STATUS="Normal"
+		PASSWORD="5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8" EMAIL="likaihua@163.com"
+		BIRTHDAY="2014-05-09 20:24:00.936" />
+	<COLORTHEME />
+	<DATAFILE />
+	<IMAGE />
+	<TAG />
+	<TAG_SUBTAGS />
+</dataset>

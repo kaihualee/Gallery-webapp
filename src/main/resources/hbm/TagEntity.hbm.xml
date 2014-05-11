@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="org.gallery.model.TagEntity" table="TAG" lazy="true">
+		<id name="id">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		<property name="createDate" column="CREATEDATE" not-null="true" />
+		<property name="modifyTime" column="MODIFYTIME" not-null="true" />
+		<property name="name" column="NAME" length="128" type="string"
+			not-null="true" />
+		<property name="status" column="STATUS" length="128"
+			not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.gallery.common.Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<many-to-one name="owner" class="org.gallery.model.AccountEntity">
+			<column name="OWNER_ID"></column>
+		</many-to-one>
+<!-- 		<many-to-one name="parent" class="org.gallery.model.TagEntity"> -->
+<!-- 			<column name="PARENT_ID"></column> -->
+<!-- 		</many-to-one> -->
+		<set name="children" table="Tag_SubTags" cascade="delete" inverse="false" lazy="true">
+			<key column="TAG_ID"/>
+			<many-to-many column="SUBTAG_ID" class="org.gallery.model.TagEntity"/>
+		</set>
+	</class>
+</hibernate-mapping>
