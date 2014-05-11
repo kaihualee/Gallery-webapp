@@ -1,11 +1,11 @@
 // JNAerator config file.
 
-//-library example
+-library example
 
-//-package com.nativelibs4java.bridj.example
+-package com.nativelibs4java.bridj.example
 
-//-I$(DIR)/../native/example/include
+-I$(DIR)/../native/example/include
 
-//$(DIR)/../native/example/include/example.h
+$(DIR)/../native/example/include/example.h
 
 //-publicRawBindings
