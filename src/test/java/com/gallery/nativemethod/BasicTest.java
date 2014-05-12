@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.gallery.utils;
+package com.gallery.nativemethod;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,10 +11,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -35,11 +37,16 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.filter.ITableFilter;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.easymock.EasyMock;
 import org.gallery.model.AccountEntity;
 import org.gallery.model.ImageEntity;
 import org.gallery.persist.AccountDao;
 import org.gallery.persist.ImageDao;
+import org.gallery.persist.utils.BeanUtils;
 import org.gallery.persist.utils.PageBean;
+import org.gallery.utils.AbstractSpringDbUnitELTemplateTestCaseJUnit44;
+import org.gallery.utils.DataSets;
+import org.gallery.web.controller.ImageController;
 import org.gallery.web.vo.ImageVO;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -47,12 +54,39 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Dahaka
  * 
  */
 public class BasicTest extends AbstractSpringDbUnitELTemplateTestCaseJUnit44 {
+
+	@Test
+	@DataSets(setUpDataSet = "data-test/empty.xml", contextLocation = "applicationContext-test.xml")
+	public void testReflect() throws NoSuchFieldException {
+
+		ImageDao dao = EasyMock.createMock(ImageDao.class);
+		ImageEntity entity = new ImageEntity();
+		entity.setId(1L);
+		entity.setName(UUID.randomUUID().toString());
+		entity.setContentType("contetyep");
+		entity.setNewFilename(UUID.randomUUID().toString());
+		entity.setSize(12L);
+		List<ImageEntity> list = new ArrayList<ImageEntity>();
+		list.add(entity);
+		
+		
+		expect(dao.getAll((PageBean) EasyMock.anyObject())).andReturn(list);
+		EasyMock.replay(dao);
+		
+		ImageController controller = new ImageController();
+		BeanUtils.forceSetProperty(controller, "imageDao", dao);
+		List<ImageVO> result = controller.list(1);
+		System.out.println(result.get(0).getUrl());
+		
+		EasyMock.verify(dao);
+	}
 
 	@Test
 	@DataSets(setUpDataSet = "data-test/empty.xml", contextLocation = "applicationContext-test.xml")
