@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.gallery.model.AccountEntity;
 import org.gallery.model.common.AssetEntityImpl;
+import org.gallery.model.common.PageBean;
 import org.gallery.model.common.Status;
 import org.gallery.persist.exception.DaoException;
-import org.gallery.persist.utils.PageBean;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 

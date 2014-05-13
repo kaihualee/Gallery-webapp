@@ -3,9 +3,9 @@ package org.gallery.persist.common;
 import java.util.List;
 
 import org.gallery.model.common.LogicEntityImpl;
+import org.gallery.model.common.PageBean;
 import org.gallery.model.common.Status;
 import org.gallery.persist.exception.DaoException;
-import org.gallery.persist.utils.PageBean;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;

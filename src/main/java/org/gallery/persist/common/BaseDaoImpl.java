@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.gallery.model.common.BaseEntity;
-import org.gallery.persist.utils.GenericsUtils;
-import org.gallery.persist.utils.PageBean;
+import org.gallery.model.common.PageBean;
+import org.gallery.utils.GenericsUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.slf4j.Logger;

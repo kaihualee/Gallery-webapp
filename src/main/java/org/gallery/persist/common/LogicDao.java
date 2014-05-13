@@ -3,8 +3,8 @@ package org.gallery.persist.common;
 import java.util.List;
 
 import org.gallery.model.common.LogicEntityImpl;
+import org.gallery.model.common.PageBean;
 import org.gallery.model.common.Status;
-import org.gallery.persist.utils.PageBean;
 
 /**
  * @author likaihua

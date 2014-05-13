@@ -1,4 +1,4 @@
-package org.gallery.persist.utils;
+package org.gallery.utils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

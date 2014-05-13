@@ -3,7 +3,7 @@ package org.gallery.persist.common;
 import java.util.List;
 
 import org.gallery.model.common.BaseEntity;
-import org.gallery.persist.utils.PageBean;
+import org.gallery.model.common.PageBean;
 
 public interface BaseDao<T extends BaseEntity> {
 

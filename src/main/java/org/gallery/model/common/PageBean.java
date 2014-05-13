@@ -1,4 +1,4 @@
-package org.gallery.persist.utils;
+package org.gallery.model.common;
 
 /**
  * @author likaihua
