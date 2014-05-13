@@ -67,9 +67,14 @@
 			<testResource>
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
+				<includes>
+					<include>*.properties</include>
+				</includes>
 			</testResource>
-			<!-- <exclude>**/*test.*</exclude> -->
-			<!-- </excludes> -->
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+			</testResource>
 		</testResources>
 		<plugins>
 			<plugin>

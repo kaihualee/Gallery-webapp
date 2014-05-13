@@ -58,7 +58,7 @@ public abstract class AbstractDbUnitTestCase {
 	}
 
 	public static IDataSet getDataSet(String name) throws Exception {
-		InputStream inputStream = AbstractDbUnitTestCase.class
+		InputStream inputStream = AbstractDbUnitTestCase.class.getClassLoader()
 				.getResourceAsStream(name);
 		assertNotNull("file " + name + " not found in classpath", inputStream);
 		Reader reader = new InputStreamReader(inputStream);

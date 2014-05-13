@@ -120,6 +120,7 @@ public class BasicTest extends AbstractSpringDbUnitELTemplateTestCaseJUnit44 {
 	}
 
 	@Test
+	@DataSets(setUpDataSet = "data-test/empty.xml")
 	public void testCommonCodec() {
 		String str = "abc";
 		System.out.println(DigestUtils.md5Hex(str));
@@ -216,6 +217,7 @@ public class BasicTest extends AbstractSpringDbUnitELTemplateTestCaseJUnit44 {
 	}
 
 	@Test
+	@DataSets(setUpDataSet = "data-test/empty.xml")
 	public void testsetupDatabase() throws Exception {
 		ApplicationContext ctx = new FileSystemXmlApplicationContext(
 				"classpath:applicationContext-test.xml");
