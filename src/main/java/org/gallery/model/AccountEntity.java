@@ -5,7 +5,7 @@ package org.gallery.model;
 
 import java.util.Date;
 
-import org.gallery.common.LogicEntityImpl;
+import org.gallery.model.common.LogicEntityImpl;
 
 /**
  * @author Dahaka

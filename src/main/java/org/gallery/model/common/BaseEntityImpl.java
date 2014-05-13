@@ -1,4 +1,4 @@
-package org.gallery.common;
+package org.gallery.model.common;
 
 import java.util.Date;
 import java.util.List;

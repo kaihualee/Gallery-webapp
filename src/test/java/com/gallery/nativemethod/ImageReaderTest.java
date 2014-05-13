@@ -16,7 +16,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.gallery.common.ThumbnailSize;
+import org.gallery.model.common.ThumbnailSize;
 import org.imgscalr.Scalr;
 import org.junit.Assert;
 import org.junit.Before;

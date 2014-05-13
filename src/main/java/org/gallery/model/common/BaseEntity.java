@@ -1,4 +1,4 @@
-package org.gallery.common;
+package org.gallery.model.common;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.gallery.common;
+package org.gallery.model.common;
 
 /**
  * @author Dahaka

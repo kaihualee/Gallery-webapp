@@ -3,14 +3,14 @@
  */
 package org.gallery.model;
 
-import org.gallery.common.AssetEntityImpl;
-import org.gallery.common.ContentEntity;
+import org.gallery.model.common.AssetEntityImpl;
+import org.gallery.model.common.ContentEntityPlug;
 
 /**
  * @author Dahaka
  * 
  */
-public class ProductEntity extends AssetEntityImpl implements ContentEntity {
+public class ProductEntity extends AssetEntityImpl implements ContentEntityPlug {
 
 	String content;
 

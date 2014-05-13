@@ -5,8 +5,8 @@ package org.gallery.model;
 
 import java.util.Set;
 
-import org.gallery.common.AssetEntityImpl;
-import org.gallery.common.MultilevelEntity;
+import org.gallery.model.common.AssetEntityImpl;
+import org.gallery.model.common.MultilevelEntityPlug;
 
 /**
  * @author Dahaka
@@ -14,7 +14,7 @@ import org.gallery.common.MultilevelEntity;
  */
 @SuppressWarnings("serial")
 public class TagEntity extends AssetEntityImpl implements
-		MultilevelEntity<TagEntity> {
+		MultilevelEntityPlug<TagEntity> {
 
 
 	public Set<TagEntity> children;

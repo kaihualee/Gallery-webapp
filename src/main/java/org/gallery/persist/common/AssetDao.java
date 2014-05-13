@@ -5,8 +5,8 @@ package org.gallery.persist.common;
 
 import java.util.List;
 
-import org.gallery.common.AssetEntityImpl;
-import org.gallery.common.Status;
+import org.gallery.model.common.AssetEntityImpl;
+import org.gallery.model.common.Status;
 import org.gallery.persist.utils.PageBean;
 
 /**

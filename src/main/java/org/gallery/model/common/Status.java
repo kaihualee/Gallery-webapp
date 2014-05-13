@@ -1,4 +1,4 @@
-package org.gallery.common;
+package org.gallery.model.common;
 
 /**
  * 实体对象的状态

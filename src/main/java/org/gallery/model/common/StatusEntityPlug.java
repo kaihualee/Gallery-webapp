@@ -1,11 +1,11 @@
-package org.gallery.common;
+package org.gallery.model.common;
 
 /**
  * 带状态的实体对象
  * 
  * @author likaihua
  */
-public interface StatusEntity {
+public interface StatusEntityPlug {
 
     public Status getStatus();
 

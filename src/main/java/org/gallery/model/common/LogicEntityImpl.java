@@ -1,4 +1,4 @@
-package org.gallery.common;
+package org.gallery.model.common;
 
 /**
  * 包含status,name
@@ -6,7 +6,7 @@ package org.gallery.common;
  * @author likaihua
  * 
  */
-public class LogicEntityImpl extends BaseEntityImpl implements StatusEntity {
+public class LogicEntityImpl extends BaseEntityImpl implements StatusEntityPlug {
 
 	/**
 	 * 状态

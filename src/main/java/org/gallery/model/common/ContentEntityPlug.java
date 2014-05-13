@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.gallery.common;
+package org.gallery.model.common;
 
 /**
  * @author Dahaka
  * 
  */
-public interface ContentEntity {
+public interface ContentEntityPlug {
 
 	public String getContent();
 
