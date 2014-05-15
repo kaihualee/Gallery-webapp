@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.gallery.nativemethod;
+package org.gallery.basic;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

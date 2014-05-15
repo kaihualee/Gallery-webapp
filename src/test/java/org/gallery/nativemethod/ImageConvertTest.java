@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.gallery.nativemethod;
+package org.gallery.nativemethod;
 
 import static org.bridj.Pointer.allocateDoubles;
 import static org.bridj.Pointer.pointerToBytes;
