@@ -1,4 +1,4 @@
-package com.gallery.nativemethod;
+package org.gallery.nativemethod;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
