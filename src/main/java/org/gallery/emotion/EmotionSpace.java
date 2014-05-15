@@ -4,7 +4,7 @@
  * Copyright 2013 ZJU, Inc. All rights reserved.
  *
  */
-package org.gallery.web.utils;
+package org.gallery.emotion;
 
 /**
  * @author likaihua
