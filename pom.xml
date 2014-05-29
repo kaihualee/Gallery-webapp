@@ -65,6 +65,10 @@
 				<directory>src/main/jnaerator</directory>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>src/main/native-lib</directory>
+				<filtering>false</filtering>
+			</resource>
 		</resources>
 		<testResources>
 			<testResource>
