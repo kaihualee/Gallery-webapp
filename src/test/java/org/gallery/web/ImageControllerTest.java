@@ -26,7 +26,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.gallery.common.ThumbnailSize;
+import org.gallery.model.common.ThumbnailSize;
 import org.gallery.persist.ImageDao;
 import org.gallery.web.controller.ImageController;
 import org.gallery.web.vo.ImageVO;

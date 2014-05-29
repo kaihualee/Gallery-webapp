@@ -9,8 +9,8 @@ package org.gallery.persist;
 import java.util.List;
 
 import org.gallery.model.ImageEntity;
+import org.gallery.model.common.PageBean;
 import org.gallery.persist.common.LogicDao;
-import org.gallery.persist.utils.PageBean;
 
 /**
  * @author likaihua

@@ -14,7 +14,7 @@ import org.bridj.Pointer;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.gallery.common.BaseEntityImpl;
+import org.gallery.model.common.BaseEntityImpl;
 
 /**
  * @author Dahaka

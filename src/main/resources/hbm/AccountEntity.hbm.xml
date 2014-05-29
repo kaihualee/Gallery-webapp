@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="org.gallery.model.AccountEntity" table="ACCOUNT" lazy="true">
+		<id name="id">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		<property name="createDate" column="CREATEDATE" not-null="true" />
+		<property name="modifyTime" column="MODIFYTIME" not-null="true" />
+		<property name="name" column="NAME" length="128" type="string"
+			not-null="true" />
+		<property name="status" column="STATUS" length="128"
+			not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.gallery.model.common.Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		
+		<property name="password" column="PASSWORD" not-null="true" />
+		<property name="email" column="EMAIL" not-null="true" />
+		<property name="birthday" column="BIRTHDAY" />
+	</class>
+</hibernate-mapping>

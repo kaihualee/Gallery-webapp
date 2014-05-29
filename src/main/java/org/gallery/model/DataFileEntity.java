@@ -6,8 +6,8 @@
  */
 package org.gallery.model;
 
-import org.gallery.common.LogicEntityImpl;
-import org.gallery.common.StatusEntity;
+import org.gallery.model.common.LogicEntityImpl;
+import org.gallery.model.common.StatusEntityPlug;
 
 /**
  * Name(基类),contentType,key,Size
@@ -15,7 +15,7 @@ import org.gallery.common.StatusEntity;
  * @author likaihua
  * 
  */
-public class DataFileEntity extends LogicEntityImpl implements StatusEntity {
+public class DataFileEntity extends LogicEntityImpl implements StatusEntityPlug {
 
 	/**
 	 * the file system's hashkey

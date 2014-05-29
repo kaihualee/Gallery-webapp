@@ -17,7 +17,7 @@
 		<property name="status" column="STATUS" length="128"
 			not-null="true">
 			<type name="org.hibernate.type.EnumType">
-				<param name="enumClass">org.gallery.common.Status</param>
+				<param name="enumClass">org.gallery.model.common.Status</param>
 				<param name="type">12</param>
 			</type>
 		</property>

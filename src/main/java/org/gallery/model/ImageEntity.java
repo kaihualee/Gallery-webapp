@@ -8,13 +8,13 @@ package org.gallery.model;
 
 import java.sql.Blob;
 
-import org.gallery.common.LogicEntityImpl;
-import org.gallery.common.StatusEntity;
+import org.gallery.model.common.LogicEntityImpl;
+import org.gallery.model.common.StatusEntityPlug;
 
 /**
  * @author likaihua
  */
-public class ImageEntity extends LogicEntityImpl implements StatusEntity {
+public class ImageEntity extends LogicEntityImpl implements StatusEntityPlug {
 
 	// Emotion fields
 	private Blob weights;

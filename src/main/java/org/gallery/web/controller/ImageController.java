@@ -41,11 +41,12 @@ import org.bridj.Pointer;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.gallery.common.ThumbnailSize;
 import org.gallery.model.ColorThemeEntity;
 import org.gallery.model.ImageEntity;
+import org.gallery.model.common.PageBean;
+import org.gallery.model.common.ThumbnailSize;
+import org.gallery.nativemethod.ImageConvertDllLibrary;
 import org.gallery.persist.ImageDao;
-import org.gallery.persist.utils.PageBean;
 import org.gallery.web.vo.ColorThemeVO;
 import org.gallery.web.vo.ImageVO;
 import org.imgscalr.Scalr;
@@ -62,8 +63,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.gallery.nativemethod.ImageConvertDllLibrary;
 
 /**
  * @author likaihua
